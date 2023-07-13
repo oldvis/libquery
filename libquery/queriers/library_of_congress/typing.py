@@ -8,6 +8,7 @@ See reference on the response data structure at
 # pylint: disable=too-few-public-methods
 
 from typing import Any, List, TypedDict, Union
+
 from typing_extensions import NotRequired
 
 from ...typing import MetadataEntry as BaseMetadataEntry

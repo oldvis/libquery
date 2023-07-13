@@ -5,6 +5,7 @@ The type declarations specific to the `David Rumsey Map Collection` data source.
 # pylint: disable=too-few-public-methods
 
 from typing import Dict, List, Literal, TypedDict
+
 from typing_extensions import NotRequired
 
 from ...typing import MetadataEntry as BaseMetadataEntry

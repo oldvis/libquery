@@ -4,8 +4,9 @@ Private utility functions for metadata.
 
 import os
 from datetime import datetime, timezone
-from dateutil import parser
 from typing import List
+
+from dateutil import parser
 
 from ...utils.jsonl import load_jl, save_jl
 from ...typing import MetadataEntry

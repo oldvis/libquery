@@ -3,6 +3,7 @@ Type declarations for collected data.
 """
 
 from typing import Any, Dict, TypedDict
+
 from typing_extensions import NotRequired
 
 
