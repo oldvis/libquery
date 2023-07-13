@@ -19,6 +19,7 @@ jobs:
       - name: Install and Build 🔧
         run: |
           pip install sphinx
+          pip install furo
           cd docs
           make html
 
