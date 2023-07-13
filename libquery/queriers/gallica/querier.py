@@ -1,0 +1,57 @@
+"""
+The entrance to querier class.
+"""
+
+from typing import List
+
+from ...base import BaseQuerierWithQueryReturn
+from ...typing import ImageQuery
+from ...utils.fetch_image import fetch_image, IncompleteFileHandler
+from ...utils.jsonl import save_jl
+from .._utils.metadata import deduplicate
+from .fetch_metadata import fetch_metadata, merge_metadata
+from .typing import MetadataEntry
+from .utils import get_image_url, get_image_uuid
+
+
+def build_image_queries(metadata: List[MetadataEntry]) -> List[ImageQuery]:
+    """Build a list of image urls to query."""
+
+    img_queries = []
+    for d in metadata:
+        if 'pages' not in d['sourceData']:
+            continue
+        pages = d['sourceData']['pages']
+        img_queries += [{
+            'url': get_image_url(page, d),
+            'uuid': get_image_uuid(page, d),
+            # The file extension in Gallica are jpeg, and cannot be inferred
+            # with mimetypes.guess_extension.
+            'extension': '.jpeg',
+        } for page in pages]
+    return img_queries
+
+
+class Querier(BaseQuerierWithQueryReturn):
+    """
+    The querier for the `Gallica` data source.
+    """
+
+    def fetch_metadata(self, queries: List[str]) -> None:
+        """
+        Args
+        ----
+        queries : List[str]
+            The base urls for which query results are to be stored.
+        """
+        
+        fetch_metadata(queries, self.query_return_dir)
+        entries = merge_metadata(queries, self.query_return_dir)
+        save_jl(entries, self.metadata_path)
+        deduplicate(self.metadata_path)
+
+    def fetch_image(self) -> None:
+        fetch_image(self.metadata_path,
+                    self.img_dir,
+                    build_image_queries,
+                    IncompleteFileHandler.SAVE)
