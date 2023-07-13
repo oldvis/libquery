@@ -20,7 +20,7 @@ jobs:
         run: |
           pip install sphinx
           cd docs
-          make
+          make html
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.7
