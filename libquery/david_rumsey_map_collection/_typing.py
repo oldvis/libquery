@@ -8,7 +8,7 @@ from typing import Dict, List, Literal, TypedDict
 
 from typing_extensions import NotRequired
 
-from ...typing import MetadataEntry as BaseMetadataEntry
+from ..typing import MetadataEntry as BaseMetadataEntry
 
 Fields = Literal[
     'Author', 'Date', 'Short Title',

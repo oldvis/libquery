@@ -4,25 +4,25 @@ The entrance to querier class.
 
 from typing import List
 
-from ...base import BaseQuerierWithQueryReturn
-from ...typing import ImageQuery
-from ...utils.fetch_image import fetch_image
-from ...utils.jsonl import save_jl
-from .._utils.metadata import deduplicate
-from .fetch_metadata import fetch_metadata, merge_metadata
-from .typing import MetadataEntry, SourceData
+from ..base import BaseQuerierWithQueryReturn
+from ..typing import ImageQuery
+from ..utils.image import fetch as fetch_image
+from ..utils.jsonl import save_jl
+from ..utils.metadata import deduplicate
+from ._fetch_metadata import fetch_metadata, merge_metadata
+from ._typing import MetadataEntry, SourceData
 
 
-def get_download_url(source_data: SourceData) -> str:
+def _get_download_url(source_data: SourceData) -> str:
     return source_data['urlSize4'] if 'urlSize4' in source_data\
         else source_data['urlSize2']
 
 
-def build_image_queries(metadata: List[MetadataEntry]) -> List[ImageQuery]:
+def _build_image_queries(metadata: List[MetadataEntry]) -> List[ImageQuery]:
     """Build a list of image urls to query."""
 
     return [{
-        'url': get_download_url(d['sourceData']),
+        'url': _get_download_url(d['sourceData']),
         'uuid': d['uuid'],
     } for d in metadata]
 
@@ -48,4 +48,4 @@ class Querier(BaseQuerierWithQueryReturn):
     def fetch_image(self) -> None:
         fetch_image(self.metadata_path,
                     self.img_dir,
-                    build_image_queries)
+                    _build_image_queries)

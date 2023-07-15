@@ -13,16 +13,16 @@ from requests.exceptions import ProxyError, SSLError
 from tqdm import tqdm
 from xml.parsers.expat import ExpatError
 
-from ...utils import load_jl
-from .._utils.metadata import filter_queries
-from .typing import Page, MetadataEntry, Record, SourceData
+from ..utils.jsonl import load_jl
+from ..utils.metadata import filter_queries
+from ._typing import Page, MetadataEntry, Record, SourceData
 
 
 searched_url: List[str] = []
 
 
 @backoff.on_exception(backoff.constant, ExpatError)
-def try_fetch_xml(url: str) -> Union[Dict, None]:
+def _try_fetch_xml(url: str) -> Union[Dict, None]:
     response = requests.get(url)
 
     # If the server raises error,
@@ -41,15 +41,15 @@ def try_fetch_xml(url: str) -> Union[Dict, None]:
 
 
 @backoff.on_exception(backoff.constant, KeyError)
-def fetch_num_records(base_url: str) -> int:
+def _fetch_num_records(base_url: str) -> int:
     """Get the number of entries found by the search url."""
 
-    payload = try_fetch_xml(base_url)
+    payload = _try_fetch_xml(base_url)
     n_records = payload['srw:searchRetrieveResponse']['srw:numberOfRecords']
     return int(n_records)
 
 
-def get_query_param(base_url: str) -> str:
+def _get_query_param(base_url: str) -> str:
     """
     Split the query parameter from the url.
     """
@@ -58,7 +58,7 @@ def get_query_param(base_url: str) -> str:
     return f'query={query_param}'
 
 
-def get_ark_identifier(identifier: str) -> Union[str, None]:
+def _get_ark_identifier(identifier: str) -> Union[str, None]:
     """
     Extract the ark identifier from the url identifier.
     If the ark identifier cannot be parsed, return None.
@@ -76,8 +76,8 @@ def get_ark_identifier(identifier: str) -> Union[str, None]:
     return f'ark:/{m[0]}'
 
 
-def build_queries(template_url: str,
-                  query_return_path: str) -> List[str]:
+def _build_queries(template_url: str,
+                   query_return_path: str) -> List[str]:
     """
     Build a list of urls to query.
     """
@@ -85,7 +85,7 @@ def build_queries(template_url: str,
     # Number of entries per page (i.e., per query).
     records_per_page = 10
 
-    n_records = fetch_num_records(template_url.format(
+    n_records = _fetch_num_records(template_url.format(
         startRecord=1,
         maximumRecords=records_per_page,
     ))
@@ -100,7 +100,7 @@ def build_queries(template_url: str,
     return filter_queries(queries, query_return_path)
 
 
-def fetch_oai_record(ark: str) -> Record:
+def _fetch_oai_record(ark: str) -> Record:
     """
     Get OAI record information given the ARK identifier.
     Example ARK identifier: 'ark:/12148/cb32798952c'.
@@ -113,11 +113,11 @@ def fetch_oai_record(ark: str) -> Record:
     # Note: the server sometimes raises internal error with response.status_code = 500.
     # We ignore such errors and let the error handler outside
     # to identify such cases and retry the query.
-    payload = try_fetch_xml(oai_record_url)
+    payload = _try_fetch_xml(oai_record_url)
     return payload['results']['notice']['record']['metadata']['oai_dc:dc']
 
 
-def fetch_pagination(ark: str) -> List[Page]:
+def _fetch_pagination(ark: str) -> List[Page]:
     """
     Get pagination information given the ARK identifier.
     For the identifier of an image collection,
@@ -129,7 +129,7 @@ def fetch_pagination(ark: str) -> List[Page]:
     query_term = ark.split('/')[-1]
     pagination_url = f'https://gallica.bnf.fr/services/Pagination?ark={query_term}'
 
-    pagination = try_fetch_xml(pagination_url)
+    pagination = _try_fetch_xml(pagination_url)
     if pagination is None:
         return []
 
@@ -142,7 +142,7 @@ def fetch_pagination(ark: str) -> List[Page]:
 
 
 @backoff.on_exception(backoff.constant, KeyError)
-def fetch_identifiers(query: str) -> List[str]:
+def _fetch_identifiers(query: str) -> List[str]:
     """
     Get the identifiers of search results, given a search query.
 
@@ -150,7 +150,7 @@ def fetch_identifiers(query: str) -> List[str]:
     https://gallica.bnf.fr/ark:/12148/btv1b530093905
     """
 
-    payload: Dict = try_fetch_xml(query)
+    payload: Dict = _try_fetch_xml(query)
     records = payload['srw:searchRetrieveResponse']['srw:records']['srw:record']
 
     if not isinstance(records, list):
@@ -163,7 +163,7 @@ def fetch_identifiers(query: str) -> List[str]:
     return [d for d in identifiers if d is not None]
 
 
-def fetch_source_data(identifier: str) -> SourceData:
+def _fetch_source_data(identifier: str) -> SourceData:
     source_data = {'identifier': identifier}
 
     # If the identifier does not contain 'ark:/',
@@ -172,20 +172,20 @@ def fetch_source_data(identifier: str) -> SourceData:
         return source_data
 
     # ARK identifier of the form 'ark:/12148/cb32798952c'.
-    ark = get_ark_identifier(identifier)
+    ark = _get_ark_identifier(identifier)
     if ark is None:
         return source_data
 
-    source_data['record'] = fetch_oai_record(ark)
+    source_data['record'] = _fetch_oai_record(ark)
 
     # If the entry is not in Gallica, its images cannot be obtained.
     if 'gallica.bnf.fr/ark:/' in identifier:
-        source_data['pages'] = fetch_pagination(ark)
+        source_data['pages'] = _fetch_pagination(ark)
 
     return source_data
 
 
-def parse(query: str, identifier: str) -> MetadataEntry:
+def _parse(query: str, identifier: str) -> MetadataEntry:
     """
     Parse each record, which may have more than one images.
 
@@ -195,7 +195,7 @@ def parse(query: str, identifier: str) -> MetadataEntry:
 
     source_name = 'Gallica'
     id_in_source = identifier
-    source_data = fetch_source_data(identifier)
+    source_data = _fetch_source_data(identifier)
 
     return {
         'uuid': str(uuid5(UUID(int=0), f'{source_name}/{id_in_source}')),
@@ -231,9 +231,9 @@ def fetch_metadata(base_urls: List[str],
 
         query_return_path = os.path.join(
             query_return_dir,
-            f'{get_query_param(template_url)}.jsonl',
+            f'{_get_query_param(template_url)}.jsonl',
         )
-        queries = build_queries(template_url, query_return_path)
+        queries = _build_queries(template_url, query_return_path)
 
         entries = [] if not os.path.exists(query_return_path)\
             else load_jl(query_return_path)
@@ -241,7 +241,7 @@ def fetch_metadata(base_urls: List[str],
 
         with open(query_return_path, 'a', encoding='utf8') as f:
             for query in tqdm(queries, desc='Progress'):
-                identifiers = fetch_identifiers(query)
+                identifiers = _fetch_identifiers(query)
                 for identifier in identifiers:
                     if isinstance(identifier, list):
                         identifier = identifier[0]
@@ -251,7 +251,7 @@ def fetch_metadata(base_urls: List[str],
                         continue
                     visited_id_in_source.append(id_in_source)
 
-                    metadata_entry = parse(query, identifier)
+                    metadata_entry = _parse(query, identifier)
                     if metadata_entry is not None:
                         f.write(
                             f'{json.dumps(metadata_entry, ensure_ascii=False)}\n')
@@ -268,7 +268,7 @@ def merge_metadata(base_urls: List[str],
     for base_url in base_urls:
         path = os.path.join(
             query_return_dir,
-            f'{get_query_param(base_url)}.jsonl',
+            f'{_get_query_param(base_url)}.jsonl',
         )
         if os.path.exists(path):
             entries += load_jl(path)

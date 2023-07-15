@@ -14,13 +14,12 @@ from requests import Response
 from requests.exceptions import ProxyError
 from tqdm import tqdm
 
-from ...utils.jsonl import load_jl
-from .._utils.metadata import deduplicate
-from .._utils.metadata import filter_queries
-from .typing import MetadataEntry
+from ..utils.jsonl import load_jl
+from ..utils.metadata import deduplicate, filter_queries
+from ._typing import MetadataEntry
 
 
-def fetch_num_records(base_url: str) -> int:
+def _fetch_num_records(base_url: str) -> int:
     """
     Get the number of entries matching the url.
     Use the 'totalResults' attribute returned by David Rumsey Map Collection.
@@ -31,7 +30,7 @@ def fetch_num_records(base_url: str) -> int:
     return int(data['totalResults'])
 
 
-def get_query_param(base_url: str) -> str:
+def _get_query_param(base_url: str) -> str:
     """
     Split the query parameter from the url.
     """
@@ -39,7 +38,7 @@ def get_query_param(base_url: str) -> str:
     return base_url.split('?')[1]
 
 
-def build_queries(base_url: str,
+def _build_queries(base_url: str,
                   query_return_path: str) -> List[str]:
     """
     Build a list of urls to query.
@@ -54,14 +53,14 @@ def build_queries(base_url: str,
     Thus, the deduplication only apply to the queried in the recent 7 days.
     """
 
-    n_records = fetch_num_records(base_url)
+    n_records = _fetch_num_records(base_url)
     n_samples = 1
     queries = [f'{base_url}&os={offset}&bs={n_samples}'
                for offset in range(n_records)]
     return filter_queries(queries, query_return_path)
 
 
-def parse(response: Response) -> MetadataEntry:
+def _parse(response: Response) -> MetadataEntry:
     """
     Parse metadata of entries in David Rumsey Map Collection.
     """
@@ -116,14 +115,14 @@ def fetch_metadata(base_urls: List[str],
 
         query_return_path = os.path.join(
             query_return_dir,
-            f'{get_query_param(base_url)}.jsonl',
+            f'{_get_query_param(base_url)}.jsonl',
         )
-        queries = build_queries(base_url, query_return_path)
+        queries = _build_queries(base_url, query_return_path)
         
         with open(query_return_path, 'a', encoding='utf-8') as f:
-            for query in tqdm(queries, position=0, leave=True, desc='Progress'):
+            for query in tqdm(queries, desc='Progress'):
                 response = requests.get(query)
-                metadata_entry = parse(response)
+                metadata_entry = _parse(response)
                 f.write(
                     f'{json.dumps(metadata_entry, ensure_ascii=False)}\n')
 
@@ -142,7 +141,7 @@ def merge_metadata(base_urls: List[str],
     for base_url in base_urls:
         path = os.path.join(
             query_return_dir,
-            f'{get_query_param(base_url)}.jsonl',
+            f'{_get_query_param(base_url)}.jsonl',
         )
         if os.path.exists(path):
             entries += load_jl(path)

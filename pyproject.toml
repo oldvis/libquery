@@ -12,10 +12,10 @@ backoff = "^2.2.1"
 tqdm = "^4.65.0"
 xmltodict = "^0.13.0"
 internetarchive = "^3.5.0"
-slugify = "^0.0.1"
 typing-extensions = "^4.7.1"
 python-dateutil = "^2.8.2"
 pillow = "^10.0.0"
+python-slugify = "^8.0.1"
 
 
 [tool.poetry.group.dev.dependencies]

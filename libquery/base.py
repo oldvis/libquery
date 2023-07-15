@@ -39,11 +39,12 @@ class BaseQuerierWithQueryReturn(BaseQuerier):
 
     @property
     def query_return_dir(self) -> str:
+        """The directory storing the metadata from each query."""
         dirname = 'query-return'
         return f'{self.metadata_dir}/{dirname}'
 
     @property
     def metadata_path(self) -> str:
         """The file storing the metadata from each query."""
-        filename = 'merged.jsonl'
+        filename = 'metadata.jsonl'
         return f'{self.metadata_dir}/{filename}'

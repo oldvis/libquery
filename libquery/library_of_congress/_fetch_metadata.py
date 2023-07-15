@@ -10,13 +10,12 @@ from requests import Response
 from requests.exceptions import ProxyError, SSLError
 from tqdm import tqdm
 
-from ...utils.jsonl import load_jl
-from .._utils.metadata import deduplicate
-from .._utils.metadata import filter_queries
-from .typing import MetadataEntry
+from ..utils.jsonl import load_jl
+from ..utils.metadata import deduplicate, filter_queries
+from ._typing import MetadataEntry
 
 
-def fetch_num_pages(base_url: str,
+def _fetch_num_pages(base_url: str,
                     records_per_page: Literal[25, 50, 100, 150]) -> Union[int, None]:
     """
     Get the number of found pages, given the search base url.
@@ -34,7 +33,7 @@ def fetch_num_pages(base_url: str,
     return response.json()['pagination']['total']
 
 
-def build_queries(base_urls: List[str],
+def _build_queries(base_urls: List[str],
                   metadata_path: str) -> List[str]:
     """
     Build a list of urls to query.
@@ -45,7 +44,7 @@ def build_queries(base_urls: List[str],
 
     queries = []
     for base_url in base_urls:
-        n_pages = fetch_num_pages(base_url, records_per_page)
+        n_pages = _fetch_num_pages(base_url, records_per_page)
         if n_pages is None:
             continue
         # The first page is indexed 1 in the database.
@@ -54,7 +53,7 @@ def build_queries(base_urls: List[str],
     return filter_queries(queries, metadata_path)
 
 
-def parse(response: Response) -> List[MetadataEntry]:
+def _parse(response: Response) -> List[MetadataEntry]:
     """
     Parse metadata of entries in Library of Congress.
     """
@@ -113,11 +112,11 @@ def fetch_metadata(base_urls: List[str],
     # TODO: make the progress logging scheme consistent with other data sources
 
     # Each query queries a page with multiple entries.
-    queries = build_queries(base_urls, metadata_path)
+    queries = _build_queries(base_urls, metadata_path)
     with open(metadata_path, 'a', encoding='utf-8') as f:
         for query in tqdm(queries, desc='Fetch Metadata Progress'):
             response = requests.get(query)
-            entries = parse(response)
+            entries = _parse(response)
             for d in entries:
                 if d['sourceData']['url'] not in queried_view_urls:
                     f.write(f'{json.dumps(d, ensure_ascii=False)}\n')

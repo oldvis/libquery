@@ -4,17 +4,20 @@ The entrance to querier class.
 
 from typing import List
 
-from ...base import BaseQuerierWithQueryReturn
-from ...typing import ImageQuery
-from ...utils.fetch_image import fetch_image, IncompleteFileHandler
-from ...utils.jsonl import save_jl
-from .._utils.metadata import deduplicate
-from .fetch_metadata import fetch_metadata, merge_metadata
-from .typing import MetadataEntry
-from .utils import get_image_url, get_image_uuid
+from ..base import BaseQuerierWithQueryReturn
+from ..typing import ImageQuery
+from ..utils.image import (
+    fetch as base_fetch_image,
+    IncompleteFileHandler,
+)
+from ..utils.jsonl import save_jl
+from ..utils.metadata import deduplicate
+from ._fetch_metadata import fetch_metadata, merge_metadata
+from ._typing import MetadataEntry
+from ._utils import get_image_url, get_image_uuid
 
 
-def build_image_queries(metadata: List[MetadataEntry]) -> List[ImageQuery]:
+def _build_image_queries(metadata: List[MetadataEntry]) -> List[ImageQuery]:
     """Build a list of image urls to query."""
 
     img_queries = []
@@ -44,14 +47,14 @@ class Querier(BaseQuerierWithQueryReturn):
         queries : List[str]
             The base urls for which query results are to be stored.
         """
-        
+
         fetch_metadata(queries, self.query_return_dir)
         entries = merge_metadata(queries, self.query_return_dir)
         save_jl(entries, self.metadata_path)
         deduplicate(self.metadata_path)
 
     def fetch_image(self) -> None:
-        fetch_image(self.metadata_path,
-                    self.img_dir,
-                    build_image_queries,
-                    IncompleteFileHandler.SAVE)
+        base_fetch_image(self.metadata_path,
+                         self.img_dir,
+                         _build_image_queries,
+                         IncompleteFileHandler.SAVE)

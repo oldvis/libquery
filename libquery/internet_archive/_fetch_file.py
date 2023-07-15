@@ -6,8 +6,8 @@ from internetarchive import download
 from requests.exceptions import ConnectTimeout, HTTPError
 from tqdm import tqdm
 
-from ...utils.jsonl import load_jl
-from .typing import MetadataEntry, SourceData
+from ..utils.jsonl import load_jl
+from ._typing import MetadataEntry, SourceData
 
 
 class FileQuery(TypedDict):
@@ -15,7 +15,7 @@ class FileQuery(TypedDict):
     identifier: str
 
 
-def get_filename(source_data: SourceData) -> Union[str, None]:
+def _get_filename(source_data: SourceData) -> Union[str, None]:
     files = source_data['files']
 
     # 'JPEG' and 'PNG' correspond to collections of single images.
@@ -38,7 +38,7 @@ def get_filename(source_data: SourceData) -> Union[str, None]:
     return image_files[0]['name']
 
 
-def build_queries(metadata: List[MetadataEntry]) -> List[FileQuery]:
+def _build_queries(metadata: List[MetadataEntry]) -> List[FileQuery]:
     """
     Build a list of image urls to query.
     Note that internetarchive's download API already
@@ -49,7 +49,7 @@ def build_queries(metadata: List[MetadataEntry]) -> List[FileQuery]:
     for d in metadata:
         source_data = d['sourceData']
         identifier = source_data['metadata']['identifier']
-        filename = get_filename(source_data)
+        filename = _get_filename(source_data)
         if filename is None:
             continue
         img_queries.append({'filename': filename,
@@ -58,7 +58,7 @@ def build_queries(metadata: List[MetadataEntry]) -> List[FileQuery]:
     return img_queries
 
 
-def filter_queries(img_queries: List[FileQuery],
+def _filter_queries(img_queries: List[FileQuery],
                    download_dir: str) -> List[FileQuery]:
     """
     Filter urls queried before according to the stored files.
@@ -87,7 +87,7 @@ def fetch_file(metadata_path: str,
         os.makedirs(download_dir)
 
     metadata = load_jl(metadata_path)
-    img_queries = filter_queries(build_queries(metadata), download_dir)
+    img_queries = _filter_queries(_build_queries(metadata), download_dir)
 
     for query in tqdm(img_queries, desc='Fetch File Progress'):
         try:

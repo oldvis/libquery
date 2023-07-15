@@ -1,6 +1,6 @@
 from uuid import uuid5, UUID
 
-from .typing import Page, MetadataEntry
+from ._typing import MetadataEntry, Page
 
 
 def get_image_url(page: Page, entry: MetadataEntry) -> str:
@@ -9,13 +9,6 @@ def get_image_url(page: Page, entry: MetadataEntry) -> str:
     identifier = entry['sourceData']['identifier']
     image_id_in_source = f'{identifier}/f{page["ordre"]}'
     return f'{image_id_in_source}.highres'
-
-
-def get_view_url(page: Page, entry: MetadataEntry) -> str:
-    """Get the online viewing url of the image corresponding to a page."""
-    identifier = entry['sourceData']['identifier']
-    image_id_in_source = f'{identifier}/f{page["ordre"]}'
-    return f'{image_id_in_source}.item'
 
 
 def get_image_uuid(page: Page, entry: MetadataEntry) -> str:

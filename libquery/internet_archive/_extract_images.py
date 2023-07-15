@@ -6,12 +6,12 @@ from PIL import Image
 from tqdm import tqdm
 from zipfile import ZipFile, BadZipFile
 
-from .utils import get_image_uuid
+from ._utils import get_image_uuid
 
 
-def revise_filename(filename: str) -> str:
+def _revise_filename(filename: str) -> str:
     """
-    Revised the filename to from using Internet Archive identifier to using UUID.
+    Revised the filename from using Internet Archive identifier to using UUID.
     """
 
     source_name = 'Internet Archive'
@@ -21,7 +21,7 @@ def revise_filename(filename: str) -> str:
     return f'{uuid}.{extension}'
 
 
-def extract_images_from_zip(file: str, img_dir: str) -> None:
+def _extract_images_from_zip(file: str, img_dir: str) -> None:
     """
     Extract images from a zip file.
     The zip file is expected to contain only .jp2 or .jpg files.
@@ -36,7 +36,7 @@ def extract_images_from_zip(file: str, img_dir: str) -> None:
                     continue
                 _, filename = os.path.split(zip_path)
                 filename_revised = '.'.join(filename.split('.')[:-1]) + '.jpg'
-                filename_revised = revise_filename(filename_revised)
+                filename_revised = _revise_filename(filename_revised)
 
                 # Skip, if the file is already unzipped
                 store_path = f'{img_dir}/{filename_revised}'
@@ -75,7 +75,7 @@ def extract_images(download_dir: str, img_dir: str) -> None:
         filename = filenames[0]
         file_path = f'{download_dir}/{dir_name}/{filename}'
         if filename.endswith('.zip'):
-            extract_images_from_zip(file_path, img_dir)
+            _extract_images_from_zip(file_path, img_dir)
         else:
-            filename_revised = revise_filename(filename)
+            filename_revised = _revise_filename(filename)
             shutil.copy(file_path, f'{img_dir}/{filename_revised}')

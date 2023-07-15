@@ -16,8 +16,8 @@ from requests.exceptions import ProxyError
 from slugify import slugify
 from tqdm import tqdm
 
-from ...utils.jsonl import load_jl
-from .typing import MetadataEntry
+from ..utils.jsonl import load_jl
+from ._typing import MetadataEntry
 
 fields = [
     'avg_rating',
@@ -65,7 +65,7 @@ fields = [
 ]
 
 
-def parse(search_result: Dict, query: str) -> MetadataEntry:
+def _parse(search_result: Dict, query: str) -> MetadataEntry:
     """
     Parse metadata of entries in Internet Archive.
     """
@@ -120,7 +120,7 @@ def fetch_metadata(queries: List[str],
 
         with open(query_return_path, 'a', encoding='utf-8') as f:
             for d in tqdm(search_results.iter_as_items(), desc='Progress'):
-                entry = parse(d, query)
+                entry = _parse(d, query)
                 if not deduplicate or entry['idInSource'] not in visited_id_in_source:
                     f.write(f'{json.dumps(entry)}\n')
 

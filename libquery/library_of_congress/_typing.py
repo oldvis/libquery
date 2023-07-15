@@ -11,7 +11,7 @@ from typing import Any, List, TypedDict, Union
 
 from typing_extensions import NotRequired
 
-from ...typing import MetadataEntry as BaseMetadataEntry
+from ..typing import MetadataEntry as BaseMetadataEntry
 
 
 class RelatedItem(TypedDict):

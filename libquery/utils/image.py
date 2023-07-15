@@ -20,8 +20,24 @@ from ..typing import ImageQuery, MetadataEntry
 from .jsonl import load_jl
 
 
-def filename2uuid(filename: str) -> str:
+def _filename2uuid(filename: str) -> str:
     return filename.split('.')[0]
+
+
+def _try_remove_image(img_dir: str, uuid: str) -> bool:
+    """Try removing an image given uuid."""
+
+    filenames = os.listdir(img_dir)
+    filename = next((d for d in filenames if _filename2uuid(d) == uuid), None)
+    if filename is None:
+        return False
+
+    file_path = os.path.join(img_dir, filename)
+    if not os.path.isfile(file_path):
+        return False
+
+    remove(uuid)
+    return True
 
 
 def filter_queries(img_queries: List[ImageQuery],
@@ -32,24 +48,8 @@ def filter_queries(img_queries: List[ImageQuery],
 
     filenames = [d for d in listdir(img_dir)
                  if isfile(join(img_dir, d))]
-    img_uuids = {filename2uuid(d) for d in filenames}
+    img_uuids = {_filename2uuid(d) for d in filenames}
     return [d for d in img_queries if d['uuid'] not in img_uuids]
-
-
-def try_remove_image(img_dir: str, uuid: str) -> bool:
-    """Try removing an image given uuid."""
-
-    filenames = os.listdir(img_dir)
-    filename = next((d for d in filenames if filename2uuid(d) == uuid), None)
-    if filename is None:
-        return False
-
-    file_path = os.path.join(img_dir, filename)
-    if not os.path.isfile(file_path):
-        return False
-
-    remove(uuid)
-    return True
 
 
 class IncompleteFileHandler(Enum):
@@ -66,23 +66,23 @@ class IncompleteFileHandler(Enum):
 last_uuid = None
 
 
-def backoff_handler(details: Details) -> None:
+def _backoff_handler(details: Details) -> None:
     print('Error occurred. Retry fetching the images:', details)
 
     img_dir = details['args'][1] if 'img_dir' not in details['kwargs']\
         else details['kwargs']['img_dir']
-    is_removed = try_remove_image(img_dir, last_uuid)
+    is_removed = _try_remove_image(img_dir, last_uuid)
     if is_removed:
         print('remove', last_uuid)
 
 
 @backoff.on_exception(backoff.constant,
                       (ChunkedEncodingError, ProxyError, SSLError),
-                      on_backoff=backoff_handler)
-def fetch_image(
+                      on_backoff=_backoff_handler)
+def fetch(
     metadata_path: str,
     img_dir: str,
-    build_queries: Callable[[List[MetadataEntry]], List[ImageQuery]],
+    _build_queries: Callable[[List[MetadataEntry]], List[ImageQuery]],
     incomplete_file_handler: IncompleteFileHandler = IncompleteFileHandler.RAISE_ERROR,
 ) -> None:
     """
@@ -102,7 +102,7 @@ def fetch_image(
     s = requests.Session()
 
     metadata = load_jl(metadata_path)
-    img_queries = filter_queries(build_queries(metadata), img_dir)
+    img_queries = filter_queries(_build_queries(metadata), img_dir)
 
     for query in tqdm(img_queries, desc='Fetch Image Progress'):
         uuid = query['uuid']

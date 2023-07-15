@@ -8,8 +8,8 @@ from typing import List
 
 from dateutil import parser
 
-from ...utils.jsonl import load_jl, save_jl
-from ...typing import MetadataEntry
+from ..typing import MetadataEntry
+from .jsonl import load_jl, save_jl
 
 
 def deduplicate(metadata_path: str) -> None:
