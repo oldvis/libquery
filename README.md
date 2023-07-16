@@ -1,4 +1,6 @@
-![PyPI](https://img.shields.io/pypi/v/libquery)
+<a href="https://pypi.org/project/libquery/">
+    <img alt="Newest PyPI version" src="https://img.shields.io/pypi/v/libquery.svg">
+</a>
 
 # libquery
 
