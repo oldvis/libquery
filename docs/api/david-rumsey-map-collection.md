@@ -1,8 +1,41 @@
-# README
+# David Rumsey Map Collection
 
-## Data Structure
+The class for fetching metadata and images from [David Rumsey Map Collection](https://www.davidrumsey.com/) with its [LUNA API](https://doc.lunaimaging.com/display/V74D/LUNA+API+Documentation).
 
-Using the LUNA API provided by David Rumsey Map Collection, we store each metadata entry as:
+## Usage
+
+Create a querier for David Rumsey Map Collection:
+
+```python
+from libquery import DavidRumseyMapCollection
+
+directory = './output/david-rumsey-map-collection'
+querier = DavidRumseyMapCollection(
+    metadata_dir=f'{directory}/metadata',
+    img_dir=f'{directory}/imgs',
+)
+```
+
+Query metadata:
+
+```python
+base_url = 'https://www.davidrumsey.com/luna/servlet/as/search?'
+queries = [
+    f'{base_url}q=type=chart',
+    f'{base_url}q=type=diagram',
+]
+querier.fetch_metadata(queries=queries)
+```
+
+Query images:
+
+```python
+querier.fetch_image()
+```
+
+## Metadata Schema
+
+Each metadata entry is stored as:
 
 ```typescript
 type Fields = 'Author' | 'Date' | 'Short Title'

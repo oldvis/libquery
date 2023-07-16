@@ -1,8 +1,41 @@
-# README
+# Internet Archive
 
-## Data Structure
+The class for fetching metadata and images from [Internet Archive](https://archive.org/) with its [Python API](https://archive.org/developers/internetarchive/index.html).
 
-Using the python API provided by Internet Archive, we store each metadata entry as:
+## Usage
+
+Create a querier for Internet Archive:
+
+```python
+from libquery import InternetArchive
+
+directory = './output/internet-archive'
+querier = InternetArchive(
+    metadata_dir=f'{directory}/metadata',
+    download_dir=f'{directory}/downloads',
+    img_dir=f'{directory}/imgs',
+)
+```
+
+Query metadata:
+
+```python
+queries = [
+    'creator:(Snow, John) AND -collection:(david-rumsey-map-collection) AND date:[1800-01-01 TO 1950-12-31]',
+    'creator:(Cheysson, Émile) AND -collection:(david-rumsey-map-collection) AND date:[0001-01-01 TO 1990-12-31]',
+]
+querier.fetch_metadata(queries=queries)
+```
+
+Query images:
+
+```python
+querier.fetch_image()
+```
+
+## Metadata Schema
+
+Each metadata entry is stored as:
 
 ```typescript
 interface FileMetadata {

@@ -1,8 +1,42 @@
-# Readme
+# Library of Congress
 
-## Data Structure
+The class for fetching metadata and images from [Library of Congress](https://www.loc.gov/) with its [search API](https://www.loc.gov/apis/).
 
-Using the API provided by Gallica, we store each metadata entry as:
+## Usage
+
+Create a querier for Library of Congress:
+
+```python
+from libquery import LibraryOfCongress
+
+directory = './output/library-of-congress'
+querier = LibraryOfCongress(
+    metadata_path=f'{directory}/metadata/metadata.jsonl',
+    img_dir=f'{directory}/imgs',
+)
+```
+
+Query metadata:
+
+```python
+base_url = 'https://www.loc.gov'
+queries = [
+    f'{base_url}/photos/?fo=json&fa=online-format:image&q=chart',
+    f'{base_url}/photos/?fo=json&fa=online-format:image&q=diagram',
+]
+# Note: querying 1 image's metadata takes ~6s
+querier.fetch_metadata(queries=queries)
+```
+
+Query images:
+
+```python
+querier.fetch_image()
+```
+
+## Metadata Schema
+
+Each metadata entry is stored as:
 
 ```typescript
 interface RelatedItem {

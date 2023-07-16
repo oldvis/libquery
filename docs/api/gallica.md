@@ -1,8 +1,41 @@
-# Readme
+# Gallica
 
-## Data Structure
+The class for fetching metadata and images from [Gallica](https://gallica.bnf.fr/) with its [search API](https://api.bnf.fr/api-gallica-de-recherche) and [metadata API](https://api.bnf.fr/api-document-de-gallica).
 
-Using the API provided by Gallica, we store each metadata entry as:
+## Usage
+
+Create a querier for Gallica:
+
+```python
+from libquery import Gallica
+
+directory = './output/gallica'
+querier = DavidRumseyMapCollection(
+    metadata_dir=f'{directory}/metadata',
+    img_dir=f'{directory}/imgs',
+)
+```
+
+Query metadata:
+
+```python
+base_url = 'https://gallica.bnf.fr/SRU?operation=searchRetrieve&version=1.2&maximumRecords={maximumRecords}&startRecord={startRecord}'
+queries = [
+    f'{base_url}&query=dc.title all %22cartes figurative%22',
+    f'{base_url}&query=dc.title all %22tableau graphique%22',
+]
+querier.fetch_metadata(queries=queries)
+```
+
+Query images:
+
+```python
+querier.fetch_image()
+```
+
+## Metadata Schema
+
+Each metadata entry is stored as:
 
 ```typescript
 interface TextWithLang {

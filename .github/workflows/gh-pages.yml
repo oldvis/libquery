@@ -18,13 +18,13 @@ jobs:
 
       - name: Install and Build 🔧
         run: |
-          pip install sphinx
-          pip install furo
           cd docs
-          make html
+          npm install -g pnpm
+          pnpm install
+          pnpm run docs:build
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.7
         with:
           branch: gh-pages
-          folder: docs/_build/html
+          folder: docs/.vitepress/dist
