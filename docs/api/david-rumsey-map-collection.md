@@ -9,20 +9,20 @@ Create a querier for David Rumsey Map Collection:
 ```python
 from libquery import DavidRumseyMapCollection
 
-directory = './output/david-rumsey-map-collection'
+directory = "./output/david-rumsey-map-collection"
 querier = DavidRumseyMapCollection(
-    metadata_dir=f'{directory}/metadata',
-    img_dir=f'{directory}/imgs',
+    metadata_dir=f"{directory}/metadata",
+    img_dir=f"{directory}/imgs",
 )
 ```
 
 Query metadata:
 
 ```python
-base_url = 'https://www.davidrumsey.com/luna/servlet/as/search?'
+base_url = "https://www.davidrumsey.com/luna/servlet/as/search?"
 queries = [
-    f'{base_url}q=type=chart',
-    f'{base_url}q=type=diagram',
+    f"{base_url}q=type=chart",
+    f"{base_url}q=type=diagram",
 ]
 querier.fetch_metadata(queries=queries)
 ```

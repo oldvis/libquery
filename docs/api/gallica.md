@@ -9,20 +9,20 @@ Create a querier for Gallica:
 ```python
 from libquery import Gallica
 
-directory = './output/gallica'
+directory = "./output/gallica"
 querier = DavidRumseyMapCollection(
-    metadata_dir=f'{directory}/metadata',
-    img_dir=f'{directory}/imgs',
+    metadata_dir=f"{directory}/metadata",
+    img_dir=f"{directory}/imgs",
 )
 ```
 
 Query metadata:
 
 ```python
-base_url = 'https://gallica.bnf.fr/SRU?operation=searchRetrieve&version=1.2&maximumRecords={maximumRecords}&startRecord={startRecord}'
+base_url = "https://gallica.bnf.fr/SRU?operation=searchRetrieve&version=1.2&maximumRecords={maximumRecords}&startRecord={startRecord}"
 queries = [
-    f'{base_url}&query=dc.title all %22cartes figurative%22',
-    f'{base_url}&query=dc.title all %22tableau graphique%22',
+    f"{base_url}&query=dc.title all %22cartes figurative%22",
+    f"{base_url}&query=dc.title all %22tableau graphique%22",
 ]
 querier.fetch_metadata(queries=queries)
 ```
