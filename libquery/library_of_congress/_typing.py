@@ -5,8 +5,6 @@ See reference on the response data structure at
 <https://www.loc.gov/apis/json-and-yaml/responses/item-and-resource/>
 """
 
-# pylint: disable=too-few-public-methods
-
 from typing import Any, List, TypedDict, Union
 
 from typing_extensions import NotRequired
@@ -190,4 +188,5 @@ class SourceData(TypedDict):
 
 class MetadataEntry(BaseMetadataEntry):
     """The data structure of an entry in the metadata."""
+
     sourceData: SourceData

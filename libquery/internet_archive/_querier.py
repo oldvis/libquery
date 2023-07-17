@@ -19,9 +19,7 @@ class Querier(BaseQuerierWithQueryReturn):
     The querier for the `Internet Archive` data source.
     """
 
-    def __init__(self, metadata_dir: str,
-                 download_dir: str,
-                 img_dir: str):
+    def __init__(self, metadata_dir: str, download_dir: str, img_dir: str):
         """
         Args
         ----
@@ -38,11 +36,8 @@ class Querier(BaseQuerierWithQueryReturn):
         self.img_dir = img_dir
 
     def fetch_metadata(self, queries: List[str]) -> None:
-        fetch_metadata(queries,
-                       self.query_return_dir,
-                       deduplicate=True)
-        entries = merge_deduplicate_metadata(
-            queries, self.query_return_dir)
+        fetch_metadata(queries, self.query_return_dir, deduplicate=True)
+        entries = merge_deduplicate_metadata(queries, self.query_return_dir)
         save_jl(entries, self.metadata_path)
 
     def fetch_image(self) -> None:

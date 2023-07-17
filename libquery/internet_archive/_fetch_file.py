@@ -16,7 +16,7 @@ class FileQuery(TypedDict):
 
 
 def _get_filename(source_data: SourceData) -> Union[str, None]:
-    files = source_data['files']
+    files = source_data["files"]
 
     # 'JPEG' and 'PNG' correspond to collections of single images.
     # 'Single Page Processed JP2 ZIP' and 'Single Page Processed JPEG ZIP'
@@ -26,16 +26,17 @@ def _get_filename(source_data: SourceData) -> Union[str, None]:
     # Example of 'Single Page Processed JPEG ZIP':
     # <https://ia801402.us.archive.org/view_archive.php?archive=/10/items/1926981926m1931eng/1926981926m1931eng_jpg.zip>
     image_formats = [
-        'JPEG', 'PNG',
-        'Single Page Processed JP2 ZIP',
-        'Single Page Processed JPEG ZIP',
+        "JPEG",
+        "PNG",
+        "Single Page Processed JP2 ZIP",
+        "Single Page Processed JPEG ZIP",
     ]
-    image_files = [d for d in files if d['format'] in image_formats]
+    image_files = [d for d in files if d["format"] in image_formats]
     if len(image_files) == 0:
         return None
 
     # Download the first image.
-    return image_files[0]['name']
+    return image_files[0]["name"]
 
 
 def _build_queries(metadata: List[MetadataEntry]) -> List[FileQuery]:
@@ -47,31 +48,34 @@ def _build_queries(metadata: List[MetadataEntry]) -> List[FileQuery]:
 
     img_queries = []
     for d in metadata:
-        source_data = d['sourceData']
-        identifier = source_data['metadata']['identifier']
+        source_data = d["sourceData"]
+        identifier = source_data["metadata"]["identifier"]
         filename = _get_filename(source_data)
         if filename is None:
             continue
-        img_queries.append({'filename': filename,
-                            'identifier': identifier})
+        img_queries.append(
+            {
+                "filename": filename,
+                "identifier": identifier,
+            }
+        )
 
     return img_queries
 
 
-def _filter_queries(img_queries: List[FileQuery],
-                   download_dir: str) -> List[FileQuery]:
+def _filter_queries(img_queries: List[FileQuery], download_dir: str) -> List[FileQuery]:
     """
     Filter urls queried before according to the stored files.
     """
 
     return [
-        d for d in img_queries
+        d
+        for d in img_queries
         if not isfile(f'{download_dir}/{d["identifier"]}/{d["filename"]}')
     ]
 
 
-def fetch_file(metadata_path: str,
-               download_dir: str) -> None:
+def fetch_file(metadata_path: str, download_dir: str) -> None:
     """
     Given base urls, generate file queries, and store the query results.
 
@@ -89,11 +93,9 @@ def fetch_file(metadata_path: str,
     metadata = load_jl(metadata_path)
     img_queries = _filter_queries(_build_queries(metadata), download_dir)
 
-    for query in tqdm(img_queries, desc='Fetch File Progress'):
+    for query in tqdm(img_queries, desc="Fetch File Progress"):
         try:
-            download(query['identifier'],
-                     files=query['filename'],
-                     destdir=download_dir)
+            download(query["identifier"], files=query["filename"], destdir=download_dir)
         except (ConnectTimeout, HTTPError) as e:
             # Internet Archive raises 403 Forbidden when item is not available.
             print(e)

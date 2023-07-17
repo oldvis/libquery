@@ -21,7 +21,7 @@ from .jsonl import load_jl
 
 
 def _filename2uuid(filename: str) -> str:
-    return filename.split('.')[0]
+    return filename.split(".")[0]
 
 
 def _try_remove_image(img_dir: str, uuid: str) -> bool:
@@ -40,16 +40,14 @@ def _try_remove_image(img_dir: str, uuid: str) -> bool:
     return True
 
 
-def filter_queries(img_queries: List[ImageQuery],
-                   img_dir: str) -> List[ImageQuery]:
+def filter_queries(img_queries: List[ImageQuery], img_dir: str) -> List[ImageQuery]:
     """
     Filter urls queried before according to the stored images.
     """
 
-    filenames = [d for d in listdir(img_dir)
-                 if isfile(join(img_dir, d))]
+    filenames = [d for d in listdir(img_dir) if isfile(join(img_dir, d))]
     img_uuids = {_filename2uuid(d) for d in filenames}
-    return [d for d in img_queries if d['uuid'] not in img_uuids]
+    return [d for d in img_queries if d["uuid"] not in img_uuids]
 
 
 class IncompleteFileHandler(Enum):
@@ -67,18 +65,23 @@ last_uuid = None
 
 
 def _backoff_handler(details: Details) -> None:
-    print('Error occurred. Retry fetching the images:', details)
+    print("Error occurred. Retry fetching the images:", details)
 
-    img_dir = details['args'][1] if 'img_dir' not in details['kwargs']\
-        else details['kwargs']['img_dir']
+    img_dir = (
+        details["args"][1]
+        if "img_dir" not in details["kwargs"]
+        else details["kwargs"]["img_dir"]
+    )
     is_removed = _try_remove_image(img_dir, last_uuid)
     if is_removed:
-        print('remove', last_uuid)
+        print("remove", last_uuid)
 
 
-@backoff.on_exception(backoff.constant,
-                      (ChunkedEncodingError, ProxyError, SSLError),
-                      on_backoff=_backoff_handler)
+@backoff.on_exception(
+    backoff.constant,
+    (ChunkedEncodingError, ProxyError, SSLError),
+    on_backoff=_backoff_handler,
+)
 def fetch(
     metadata_path: str,
     img_dir: str,
@@ -104,17 +107,17 @@ def fetch(
     metadata = load_jl(metadata_path)
     img_queries = filter_queries(_build_queries(metadata), img_dir)
 
-    for query in tqdm(img_queries, desc='Fetch Image Progress'):
-        uuid = query['uuid']
+    for query in tqdm(img_queries, desc="Fetch Image Progress"):
+        uuid = query["uuid"]
         global last_uuid
         last_uuid = uuid
 
         # Note: some database may continuously raise error for a certain resource.
         # It is necessary to ignore such resources instead of keep fetching repeatedly.
         try:
-            response = s.get(query['url'])
+            response = s.get(query["url"])
         except SSLError as e:
-            print(f'Error {e}')
+            print(f"Error {e}")
 
         # 403 Forbidden
         if response.status_code == 403:
@@ -133,8 +136,11 @@ def fetch(
         if response.status_code == 503:
             continue
 
-        extension = query['extension'] if 'extension' in query\
-            else mimetypes.guess_extension(response.headers['content-type'])
+        extension = (
+            query["extension"]
+            if "extension" in query
+            else mimetypes.guess_extension(response.headers["content-type"])
+        )
 
         # In some cases, the extension may not be set.
         # For example, when the response is a plain text string.
@@ -144,9 +150,12 @@ def fetch(
         # If the file is not fully returned, which may frequently happen for large images.
         # Note: there is no guarantee that the server will set the correct content-length.
         # For example, Gallica often returns incorrect 'content-length' even if the image is correctly returned.
-        if 'content-length' in response.headers and len(response.content) != int(response.headers['content-length']):
+        if "content-length" in response.headers and len(response.content) != int(
+            response.headers["content-length"]
+        ):
             print(
-                f'Status code {response.status_code} - File not fully returned for url = {query["url"]}: {len(response.content)} != {response.headers["content-length"]}')
+                f'Status code {response.status_code} - File not fully returned for url = {query["url"]}: {len(response.content)} != {response.headers["content-length"]}'
+            )
             if incomplete_file_handler == IncompleteFileHandler.RAISE_ERROR:
                 raise ProxyError()
             elif incomplete_file_handler == IncompleteFileHandler.IGNORE:
@@ -154,5 +163,5 @@ def fetch(
             elif incomplete_file_handler == IncompleteFileHandler.SAVE:
                 pass
 
-        with open(f'{img_dir}/{uuid}{extension}', 'wb') as f:
+        with open(f"{img_dir}/{uuid}{extension}", "wb") as f:
             f.write(response.content)

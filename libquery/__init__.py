@@ -7,11 +7,11 @@ from .internet_archive import InternetArchive
 from .library_of_congress import LibraryOfCongress
 
 __all__ = [
-    'base',
-    'typing',
-    'utils',
-    'DavidRumseyMapCollection',
-    'Gallica',
-    'InternetArchive',
-    'LibraryOfCongress',
+    "base",
+    "typing",
+    "utils",
+    "DavidRumseyMapCollection",
+    "Gallica",
+    "InternetArchive",
+    "LibraryOfCongress",
 ]

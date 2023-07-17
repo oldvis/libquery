@@ -34,7 +34,7 @@ libquery/         - the Python package
 
 ## Code Style
 
-Use [Pylint](https://github.com/pylint-dev/pylint) to detect code style issues and fix the issues before committing.
+Use [Black](https://github.com/psf/black) to detect code style issues and fix the issues before committing.
 
 ## Thanks
 

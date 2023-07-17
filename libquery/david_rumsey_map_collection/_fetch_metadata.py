@@ -27,7 +27,7 @@ def _fetch_num_records(base_url: str) -> int:
 
     response = requests.get(base_url)
     data = response.json()
-    return int(data['totalResults'])
+    return int(data["totalResults"])
 
 
 def _get_query_param(base_url: str) -> str:
@@ -35,11 +35,10 @@ def _get_query_param(base_url: str) -> str:
     Split the query parameter from the url.
     """
 
-    return base_url.split('?')[1]
+    return base_url.split("?")[1]
 
 
-def _build_queries(base_url: str,
-                  query_return_path: str) -> List[str]:
+def _build_queries(base_url: str, query_return_path: str) -> List[str]:
     """
     Build a list of urls to query.
     The urls already queried according to
@@ -55,8 +54,7 @@ def _build_queries(base_url: str,
 
     n_records = _fetch_num_records(base_url)
     n_samples = 1
-    queries = [f'{base_url}&os={offset}&bs={n_samples}'
-               for offset in range(n_records)]
+    queries = [f"{base_url}&os={offset}&bs={n_samples}" for offset in range(n_records)]
     return filter_queries(queries, query_return_path)
 
 
@@ -67,30 +65,29 @@ def _parse(response: Response) -> MetadataEntry:
 
     data = response.json()
 
-    assert len(data['results']) == 1, f"length = {len(data['results'])}"
+    assert len(data["results"]) == 1, f"length = {len(data['results'])}"
 
-    result = data['results'][0]
+    result = data["results"][0]
 
     # relayButtonUrl and relayButtonTitle are useless but take much storage
-    del result['relayButtonUrl']
-    del result['relayButtonTitle']
+    del result["relayButtonUrl"]
+    del result["relayButtonTitle"]
 
-    source = 'David Rumsey Map Collection'
-    id_in_source = result['id']
+    source = "David Rumsey Map Collection"
+    id_in_source = result["id"]
 
     return {
-        'uuid': str(uuid5(UUID(int=0), f'{source}/{id_in_source}')),
-        'url': response.url,
-        'source': source,
-        'idInSource': id_in_source,
-        'accessDate': datetime.now(timezone.utc).isoformat(),
-        'sourceData': result,
+        "uuid": str(uuid5(UUID(int=0), f"{source}/{id_in_source}")),
+        "url": response.url,
+        "source": source,
+        "idInSource": id_in_source,
+        "accessDate": datetime.now(timezone.utc).isoformat(),
+        "sourceData": result,
     }
 
 
 @backoff.on_exception(backoff.constant, ProxyError)
-def fetch_metadata(base_urls: List[str],
-                   query_return_dir: str) -> None:
+def fetch_metadata(base_urls: List[str], query_return_dir: str) -> None:
     """
     Given base urls, generate metadata queries, and store the query results.
 
@@ -111,27 +108,25 @@ def fetch_metadata(base_urls: List[str],
         os.makedirs(query_return_dir)
 
     for base_url in base_urls:
-        print(f'Fetch Metadata from {base_url}')
+        print(f"Fetch Metadata from {base_url}")
 
         query_return_path = os.path.join(
             query_return_dir,
-            f'{_get_query_param(base_url)}.jsonl',
+            f"{_get_query_param(base_url)}.jsonl",
         )
         queries = _build_queries(base_url, query_return_path)
-        
-        with open(query_return_path, 'a', encoding='utf-8') as f:
-            for query in tqdm(queries, desc='Progress'):
+
+        with open(query_return_path, "a", encoding="utf-8") as f:
+            for query in tqdm(queries, desc="Progress"):
                 response = requests.get(query)
                 metadata_entry = _parse(response)
-                f.write(
-                    f'{json.dumps(metadata_entry, ensure_ascii=False)}\n')
+                f.write(f"{json.dumps(metadata_entry, ensure_ascii=False)}\n")
 
         # For duplicate entries, only keep the latest one.
         deduplicate(query_return_path)
 
 
-def merge_metadata(base_urls: List[str],
-                   query_return_dir: str) -> List[MetadataEntry]:
+def merge_metadata(base_urls: List[str], query_return_dir: str) -> List[MetadataEntry]:
     """
     Merge metadata of different queries.
     Return the merge result.
@@ -141,7 +136,7 @@ def merge_metadata(base_urls: List[str],
     for base_url in base_urls:
         path = os.path.join(
             query_return_dir,
-            f'{_get_query_param(base_url)}.jsonl',
+            f"{_get_query_param(base_url)}.jsonl",
         )
         if os.path.exists(path):
             entries += load_jl(path)

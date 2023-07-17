@@ -29,8 +29,7 @@ def _try_fetch_xml(url: str) -> Union[Dict, None]:
     # the returned XML will not be parsable.
     # Raise error to retry to query.
     if response.status_code != 200:
-        raise ExpatError('Request failed with status code:',
-                         response.status_code)
+        raise ExpatError("Request failed with status code:", response.status_code)
 
     # An example query with status code 200 and empty response.text:
     # https://gallica.bnf.fr/services/Pagination?ark=cb326850921
@@ -45,7 +44,7 @@ def _fetch_num_records(base_url: str) -> int:
     """Get the number of entries found by the search url."""
 
     payload = _try_fetch_xml(base_url)
-    n_records = payload['srw:searchRetrieveResponse']['srw:numberOfRecords']
+    n_records = payload["srw:searchRetrieveResponse"]["srw:numberOfRecords"]
     return int(n_records)
 
 
@@ -54,8 +53,8 @@ def _get_query_param(base_url: str) -> str:
     Split the query parameter from the url.
     """
 
-    query_param = base_url.split('query=')[1]
-    return f'query={query_param}'
+    query_param = base_url.split("query=")[1]
+    return f"query={query_param}"
 
 
 def _get_ark_identifier(identifier: str) -> Union[str, None]:
@@ -70,14 +69,13 @@ def _get_ark_identifier(identifier: str) -> Union[str, None]:
     return 'ark:/12148/cb32798952c,
     """
 
-    m = re.findall(r'ark:/12148/[a-zA-Z0-9]+', identifier)
+    m = re.findall(r"ark:/12148/[a-zA-Z0-9]+", identifier)
     if len(m) != 1:
         return None
-    return f'ark:/{m[0]}'
+    return f"ark:/{m[0]}"
 
 
-def _build_queries(template_url: str,
-                   query_return_path: str) -> List[str]:
+def _build_queries(template_url: str, query_return_path: str) -> List[str]:
     """
     Build a list of urls to query.
     """
@@ -85,17 +83,22 @@ def _build_queries(template_url: str,
     # Number of entries per page (i.e., per query).
     records_per_page = 10
 
-    n_records = _fetch_num_records(template_url.format(
-        startRecord=1,
-        maximumRecords=records_per_page,
-    ))
+    n_records = _fetch_num_records(
+        template_url.format(
+            startRecord=1,
+            maximumRecords=records_per_page,
+        )
+    )
     n_pages = math.ceil(n_records / records_per_page)
 
     # The first entry is indexed 1 in the database.
-    queries = [template_url.format(
-        startRecord=i * records_per_page + 1,
-        maximumRecords=records_per_page,
-    ) for i in range(n_pages)]
+    queries = [
+        template_url.format(
+            startRecord=i * records_per_page + 1,
+            maximumRecords=records_per_page,
+        )
+        for i in range(n_pages)
+    ]
     queries = [d for d in queries if d not in searched_url]
     return filter_queries(queries, query_return_path)
 
@@ -107,14 +110,14 @@ def _fetch_oai_record(ark: str) -> Record:
     """
 
     # The service of the detailed content for a collection.
-    query_term = ark.split('/')[-1]
-    oai_record_url = f'https://gallica.bnf.fr/services/OAIRecord?ark={query_term}'
+    query_term = ark.split("/")[-1]
+    oai_record_url = f"https://gallica.bnf.fr/services/OAIRecord?ark={query_term}"
 
     # Note: the server sometimes raises internal error with response.status_code = 500.
     # We ignore such errors and let the error handler outside
     # to identify such cases and retry the query.
     payload = _try_fetch_xml(oai_record_url)
-    return payload['results']['notice']['record']['metadata']['oai_dc:dc']
+    return payload["results"]["notice"]["record"]["metadata"]["oai_dc:dc"]
 
 
 def _fetch_pagination(ark: str) -> List[Page]:
@@ -126,16 +129,19 @@ def _fetch_pagination(ark: str) -> List[Page]:
     """
 
     # Get image page information (i.e., image list) for a collection
-    query_term = ark.split('/')[-1]
-    pagination_url = f'https://gallica.bnf.fr/services/Pagination?ark={query_term}'
+    query_term = ark.split("/")[-1]
+    pagination_url = f"https://gallica.bnf.fr/services/Pagination?ark={query_term}"
 
     pagination = _try_fetch_xml(pagination_url)
     if pagination is None:
         return []
 
     # Note: 'livre' is the French translation of 'book'
-    pages = [] if 'pages' not in pagination['livre']\
-        else pagination['livre']['pages']['page']
+    pages = (
+        []
+        if "pages" not in pagination["livre"]
+        else pagination["livre"]["pages"]["page"]
+    )
     if not isinstance(pages, list):
         pages = [pages]
     return pages
@@ -151,24 +157,21 @@ def _fetch_identifiers(query: str) -> List[str]:
     """
 
     payload: Dict = _try_fetch_xml(query)
-    records = payload['srw:searchRetrieveResponse']['srw:records']['srw:record']
+    records = payload["srw:searchRetrieveResponse"]["srw:records"]["srw:record"]
 
     if not isinstance(records, list):
         records = [records]
 
-    identifiers = [
-        d['srw:recordData']['oai_dc:dc']['dc:identifier']
-        for d in records
-    ]
+    identifiers = [d["srw:recordData"]["oai_dc:dc"]["dc:identifier"] for d in records]
     return [d for d in identifiers if d is not None]
 
 
 def _fetch_source_data(identifier: str) -> SourceData:
-    source_data = {'identifier': identifier}
+    source_data = {"identifier": identifier}
 
     # If the identifier does not contain 'ark:/',
     # the ark identifier cannot be parsed, and the OAI record cannot be found.
-    if 'ark:/' not in identifier:
+    if "ark:/" not in identifier:
         return source_data
 
     # ARK identifier of the form 'ark:/12148/cb32798952c'.
@@ -176,11 +179,11 @@ def _fetch_source_data(identifier: str) -> SourceData:
     if ark is None:
         return source_data
 
-    source_data['record'] = _fetch_oai_record(ark)
+    source_data["record"] = _fetch_oai_record(ark)
 
     # If the entry is not in Gallica, its images cannot be obtained.
-    if 'gallica.bnf.fr/ark:/' in identifier:
-        source_data['pages'] = _fetch_pagination(ark)
+    if "gallica.bnf.fr/ark:/" in identifier:
+        source_data["pages"] = _fetch_pagination(ark)
 
     return source_data
 
@@ -193,23 +196,22 @@ def _parse(query: str, identifier: str) -> MetadataEntry:
     https://gallica.bnf.fr/ark:/12148/btv1b530093905
     """
 
-    source_name = 'Gallica'
+    source_name = "Gallica"
     id_in_source = identifier
     source_data = _fetch_source_data(identifier)
 
     return {
-        'uuid': str(uuid5(UUID(int=0), f'{source_name}/{id_in_source}')),
-        'url': query,
-        'source': source_name,
-        'idInSource': id_in_source,
-        'accessDate': datetime.now(timezone.utc).isoformat(),
-        'sourceData': source_data
+        "uuid": str(uuid5(UUID(int=0), f"{source_name}/{id_in_source}")),
+        "url": query,
+        "source": source_name,
+        "idInSource": id_in_source,
+        "accessDate": datetime.now(timezone.utc).isoformat(),
+        "sourceData": source_data,
     }
 
 
 @backoff.on_exception(backoff.constant, (ProxyError, SSLError))
-def fetch_metadata(base_urls: List[str],
-                   query_return_dir: str) -> None:
+def fetch_metadata(base_urls: List[str], query_return_dir: str) -> None:
     """
     Given base url and title keywords, generate metadata queries, and store the query results.
 
@@ -227,20 +229,21 @@ def fetch_metadata(base_urls: List[str],
     visited_id_in_source = []
 
     for template_url in base_urls:
-        print(f'Fetch Metadata from {template_url}')
+        print(f"Fetch Metadata from {template_url}")
 
         query_return_path = os.path.join(
             query_return_dir,
-            f'{_get_query_param(template_url)}.jsonl',
+            f"{_get_query_param(template_url)}.jsonl",
         )
         queries = _build_queries(template_url, query_return_path)
 
-        entries = [] if not os.path.exists(query_return_path)\
-            else load_jl(query_return_path)
-        visited_id_in_source += [d['idInSource'] for d in entries]
+        entries = (
+            [] if not os.path.exists(query_return_path) else load_jl(query_return_path)
+        )
+        visited_id_in_source += [d["idInSource"] for d in entries]
 
-        with open(query_return_path, 'a', encoding='utf8') as f:
-            for query in tqdm(queries, desc='Progress'):
+        with open(query_return_path, "a", encoding="utf8") as f:
+            for query in tqdm(queries, desc="Progress"):
                 identifiers = _fetch_identifiers(query)
                 for identifier in identifiers:
                     if isinstance(identifier, list):
@@ -253,13 +256,11 @@ def fetch_metadata(base_urls: List[str],
 
                     metadata_entry = _parse(query, identifier)
                     if metadata_entry is not None:
-                        f.write(
-                            f'{json.dumps(metadata_entry, ensure_ascii=False)}\n')
+                        f.write(f"{json.dumps(metadata_entry, ensure_ascii=False)}\n")
                 searched_url.append(query)
 
 
-def merge_metadata(base_urls: List[str],
-                   query_return_dir: str) -> List[MetadataEntry]:
+def merge_metadata(base_urls: List[str], query_return_dir: str) -> List[MetadataEntry]:
     """
     Combine metadata files into one.
     """
@@ -268,7 +269,7 @@ def merge_metadata(base_urls: List[str],
     for base_url in base_urls:
         path = os.path.join(
             query_return_dir,
-            f'{_get_query_param(base_url)}.jsonl',
+            f"{_get_query_param(base_url)}.jsonl",
         )
         if os.path.exists(path):
             entries += load_jl(path)

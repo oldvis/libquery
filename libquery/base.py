@@ -23,8 +23,7 @@ class BaseQuerierWithQueryReturn(BaseQuerier):
     query returns are to be stored as individual JSON lines files.
     """
 
-    def __init__(self, metadata_dir: str,
-                 img_dir: str):
+    def __init__(self, metadata_dir: str, img_dir: str):
         """
         Args
         ----
@@ -40,11 +39,11 @@ class BaseQuerierWithQueryReturn(BaseQuerier):
     @property
     def query_return_dir(self) -> str:
         """The directory storing the metadata from each query."""
-        dirname = 'query-return'
-        return f'{self.metadata_dir}/{dirname}'
+        dirname = "query-return"
+        return f"{self.metadata_dir}/{dirname}"
 
     @property
     def metadata_path(self) -> str:
         """The file storing the metadata from each query."""
-        filename = 'metadata.jsonl'
-        return f'{self.metadata_dir}/{filename}'
+        filename = "metadata.jsonl"
+        return f"{self.metadata_dir}/{filename}"

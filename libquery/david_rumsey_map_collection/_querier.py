@@ -14,17 +14,23 @@ from ._typing import MetadataEntry, SourceData
 
 
 def _get_download_url(source_data: SourceData) -> str:
-    return source_data['urlSize4'] if 'urlSize4' in source_data\
-        else source_data['urlSize2']
+    return (
+        source_data["urlSize4"]
+        if "urlSize4" in source_data
+        else source_data["urlSize2"]
+    )
 
 
 def _build_image_queries(metadata: List[MetadataEntry]) -> List[ImageQuery]:
     """Build a list of image urls to query."""
 
-    return [{
-        'url': _get_download_url(d['sourceData']),
-        'uuid': d['uuid'],
-    } for d in metadata]
+    return [
+        {
+            "url": _get_download_url(d["sourceData"]),
+            "uuid": d["uuid"],
+        }
+        for d in metadata
+    ]
 
 
 class Querier(BaseQuerierWithQueryReturn):
@@ -46,6 +52,4 @@ class Querier(BaseQuerierWithQueryReturn):
         deduplicate(self.metadata_path)
 
     def fetch_image(self) -> None:
-        fetch_image(self.metadata_path,
-                    self.img_dir,
-                    _build_image_queries)
+        fetch_image(self.metadata_path, self.img_dir, _build_image_queries)

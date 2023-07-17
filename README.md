@@ -1,6 +1,9 @@
 <a href="https://pypi.org/project/libquery/">
     <img alt="Newest PyPI version" src="https://img.shields.io/pypi/v/libquery.svg">
 </a>
+<a href="https://github.com/psf/black">
+    <img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg">
+</a>
 
 # libquery
 

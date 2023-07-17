@@ -16,10 +16,13 @@ def _build_image_queries(metadata: List[MetadataEntry]) -> List[ImageQuery]:
     Build a list of image urls to query.
     """
 
-    return [{
-        'url': d['sourceData']['image_url'][-1],
-        'uuid': d['uuid'],
-    } for d in metadata]
+    return [
+        {
+            "url": d["sourceData"]["image_url"][-1],
+            "uuid": d["uuid"],
+        }
+        for d in metadata
+    ]
 
 
 class Querier(BaseQuerier):
@@ -27,8 +30,7 @@ class Querier(BaseQuerier):
     The querier for the `Library of Congress` data source.
     """
 
-    def __init__(self, metadata_path: str,
-                 img_dir: str):
+    def __init__(self, metadata_path: str, img_dir: str):
         """
         Args
         ----
@@ -45,6 +47,4 @@ class Querier(BaseQuerier):
         fetch_metadata(queries, self.metadata_path)
 
     def fetch_image(self) -> None:
-        fetch_image(self.metadata_path,
-                    self.img_dir,
-                    _build_image_queries)
+        fetch_image(self.metadata_path, self.img_dir, _build_image_queries)

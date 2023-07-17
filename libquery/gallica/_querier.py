@@ -22,16 +22,19 @@ def _build_image_queries(metadata: List[MetadataEntry]) -> List[ImageQuery]:
 
     img_queries = []
     for d in metadata:
-        if 'pages' not in d['sourceData']:
+        if "pages" not in d["sourceData"]:
             continue
-        pages = d['sourceData']['pages']
-        img_queries += [{
-            'url': get_image_url(page, d),
-            'uuid': get_image_uuid(page, d),
-            # The file extension in Gallica are jpeg, and cannot be inferred
-            # with mimetypes.guess_extension.
-            'extension': '.jpeg',
-        } for page in pages]
+        pages = d["sourceData"]["pages"]
+        img_queries += [
+            {
+                "url": get_image_url(page, d),
+                "uuid": get_image_uuid(page, d),
+                # The file extension in Gallica are jpeg, and cannot be inferred
+                # with mimetypes.guess_extension.
+                "extension": ".jpeg",
+            }
+            for page in pages
+        ]
     return img_queries
 
 
@@ -54,7 +57,9 @@ class Querier(BaseQuerierWithQueryReturn):
         deduplicate(self.metadata_path)
 
     def fetch_image(self) -> None:
-        base_fetch_image(self.metadata_path,
-                         self.img_dir,
-                         _build_image_queries,
-                         IncompleteFileHandler.SAVE)
+        base_fetch_image(
+            self.metadata_path,
+            self.img_dir,
+            _build_image_queries,
+            IncompleteFileHandler.SAVE,
+        )

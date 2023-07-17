@@ -27,20 +27,20 @@ def deduplicate(metadata_path: str) -> None:
     entries = load_jl(metadata_path)
     id_in_source_to_entry = {}
     for d in entries:
-        id_in_source = d['idInSource']
+        id_in_source = d["idInSource"]
         if id_in_source not in id_in_source_to_entry:
             id_in_source_to_entry[id_in_source] = d
             continue
         prev_access_date = parser.parse(
-            id_in_source_to_entry[id_in_source]['accessDate'])
-        new_access_date = parser.parse(d['accessDate'])
+            id_in_source_to_entry[id_in_source]["accessDate"]
+        )
+        new_access_date = parser.parse(d["accessDate"])
         if new_access_date > prev_access_date:
             id_in_source_to_entry[id_in_source] = d
     save_jl(id_in_source_to_entry.values(), metadata_path)
 
 
-def filter_queries(queries: List[str],
-                   metadata_path: str) -> List[str]:
+def filter_queries(queries: List[str], metadata_path: str) -> List[str]:
     """
     Filter stale queries.
     Discard the metadata queries that have been executed
@@ -57,8 +57,8 @@ def filter_queries(queries: List[str],
     now = datetime.now(timezone.utc)
     queried_urls = set()
     for d in metadata:
-        access_date = parser.parse(d['accessDate'])
+        access_date = parser.parse(d["accessDate"])
         delta = now - access_date
         if delta.days < stale_threshold:
-            queried_urls.add(d['url'])
+            queried_urls.add(d["url"])
     return [d for d in queries if d not in queried_urls]

@@ -2,8 +2,6 @@
 The type declarations specific to the `David Rumsey Map Collection` data source.
 """
 
-# pylint: disable=too-few-public-methods
-
 from typing import Dict, List, Literal, TypedDict
 
 from typing_extensions import NotRequired
@@ -11,24 +9,49 @@ from typing_extensions import NotRequired
 from ..typing import MetadataEntry as BaseMetadataEntry
 
 Fields = Literal[
-    'Author', 'Date', 'Short Title',
-    'Publisher', 'Publisher Location', 'Type',
-    'Obj Height cm', 'Obj Width cm', 'Scale 1',
-    'World Area', 'Subject', 'Full Title',
-    'List No', 'Page No', 'Series No',
-    'Publication Author',
-    'Pub Date', 'Pub Title', 'Pub Reference',
-    'Pub Note', 'Pub List No',
-    'Pub Type', 'Pub Maps',
-    'Pub Height cm', 'Pub Width cm',
-    'Image No', 'Download 1', 'Download 2',
-    'Authors', 'Note', 'Reference',
-    'World Area', 'Collection', 'Scale 1',
-    'Country', 'Engraver or Printer',
-    'Region', 'State/Province', 'City',
-    'Event', 'County',
-    'Attributed Author',
-    'Attributed Publication Author',
+    "Author",
+    "Date",
+    "Short Title",
+    "Publisher",
+    "Publisher Location",
+    "Type",
+    "Obj Height cm",
+    "Obj Width cm",
+    "Scale 1",
+    "World Area",
+    "Subject",
+    "Full Title",
+    "List No",
+    "Page No",
+    "Series No",
+    "Publication Author",
+    "Pub Date",
+    "Pub Title",
+    "Pub Reference",
+    "Pub Note",
+    "Pub List No",
+    "Pub Type",
+    "Pub Maps",
+    "Pub Height cm",
+    "Pub Width cm",
+    "Image No",
+    "Download 1",
+    "Download 2",
+    "Authors",
+    "Note",
+    "Reference",
+    "World Area",
+    "Collection",
+    "Scale 1",
+    "Country",
+    "Engraver or Printer",
+    "Region",
+    "State/Province",
+    "City",
+    "Event",
+    "County",
+    "Attributed Author",
+    "Attributed Publication Author",
 ]
 
 
@@ -56,4 +79,5 @@ class SourceData(TypedDict):
 
 class MetadataEntry(BaseMetadataEntry):
     """The data structure of an entry in the metadata."""
+
     sourceData: SourceData

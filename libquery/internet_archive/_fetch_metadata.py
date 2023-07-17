@@ -2,8 +2,6 @@
 Utility functions for getting metadata from David Rumsey Map Collection.
 """
 
-# pylint: disable=invalid-name,disallowed-name
-
 import os
 import json
 from datetime import datetime, timezone
@@ -20,48 +18,48 @@ from ..utils.jsonl import load_jl
 from ._typing import MetadataEntry
 
 fields = [
-    'avg_rating',
-    'backup_location',
-    'btih',
-    'call_number',
-    'collection',
-    'contributor',
-    'coverage',
-    'creator',
-    'date',
-    'description',
-    'downloads',
-    'external-identifier',
-    'foldoutcount',
-    'format',
-    'genre',
-    'identifier',
-    'imagecount',
-    'indexflag',
-    'item_size',
-    'language',
-    'licenseurl',
-    'mediatype',
-    'members',
-    'month',
-    'name',
-    'noindex',
-    'num_reviews',
-    'oai_updatedate',
-    'publicdate',
-    'publisher',
-    'related-external-id',
-    'reviewdate',
-    'rights',
-    'scanningcentre',
-    'source',
-    'stripped_tags',
-    'subject',
-    'title',
-    'type',
-    'volume',
-    'week',
-    'year'
+    "avg_rating",
+    "backup_location",
+    "btih",
+    "call_number",
+    "collection",
+    "contributor",
+    "coverage",
+    "creator",
+    "date",
+    "description",
+    "downloads",
+    "external-identifier",
+    "foldoutcount",
+    "format",
+    "genre",
+    "identifier",
+    "imagecount",
+    "indexflag",
+    "item_size",
+    "language",
+    "licenseurl",
+    "mediatype",
+    "members",
+    "month",
+    "name",
+    "noindex",
+    "num_reviews",
+    "oai_updatedate",
+    "publicdate",
+    "publisher",
+    "related-external-id",
+    "reviewdate",
+    "rights",
+    "scanningcentre",
+    "source",
+    "stripped_tags",
+    "subject",
+    "title",
+    "type",
+    "volume",
+    "week",
+    "year",
 ]
 
 
@@ -71,23 +69,23 @@ def _parse(search_result: Dict, query: str) -> MetadataEntry:
     """
 
     source_data = search_result.item_metadata
-    source = 'Internet Archive'
-    id_in_source = source_data['metadata']['identifier']
+    source = "Internet Archive"
+    id_in_source = source_data["metadata"]["identifier"]
 
     return {
-        'uuid': str(uuid5(UUID(int=0), f'{source}/{id_in_source}')),
-        'url': f'https://archive.org/search?query={query}',
-        'source': source,
-        'idInSource': id_in_source,
-        'accessDate': datetime.now(timezone.utc).isoformat(),
-        'sourceData': source_data,
+        "uuid": str(uuid5(UUID(int=0), f"{source}/{id_in_source}")),
+        "url": f"https://archive.org/search?query={query}",
+        "source": source,
+        "idInSource": id_in_source,
+        "accessDate": datetime.now(timezone.utc).isoformat(),
+        "sourceData": source_data,
     }
 
 
 @backoff.on_exception(backoff.constant, ProxyError)
-def fetch_metadata(queries: List[str],
-                   query_return_dir: str,
-                   deduplicate: bool = True) -> None:
+def fetch_metadata(
+    queries: List[str], query_return_dir: str, deduplicate: bool = True
+) -> None:
     """
     Given the search queries, and store the query results.
 
@@ -107,26 +105,29 @@ def fetch_metadata(queries: List[str],
         os.makedirs(query_return_dir)
 
     for query in queries:
-        print(f'Fetch Metadata from {query}')
+        print(f"Fetch Metadata from {query}")
 
-        query_return_path = f'{query_return_dir}/{slugify(query)}.jsonl'
-        search_results = internetarchive.search_items(
-            query, fields=fields)
+        query_return_path = f"{query_return_dir}/{slugify(query)}.jsonl"
+        search_results = internetarchive.search_items(query, fields=fields)
 
         if deduplicate:
-            entries = [] if not os.path.exists(query_return_path)\
+            entries = (
+                []
+                if not os.path.exists(query_return_path)
                 else load_jl(query_return_path)
-            visited_id_in_source = {d['idInSource'] for d in entries}
+            )
+            visited_id_in_source = {d["idInSource"] for d in entries}
 
-        with open(query_return_path, 'a', encoding='utf-8') as f:
-            for d in tqdm(search_results.iter_as_items(), desc='Progress'):
+        with open(query_return_path, "a", encoding="utf-8") as f:
+            for d in tqdm(search_results.iter_as_items(), desc="Progress"):
                 entry = _parse(d, query)
-                if not deduplicate or entry['idInSource'] not in visited_id_in_source:
-                    f.write(f'{json.dumps(entry)}\n')
+                if not deduplicate or entry["idInSource"] not in visited_id_in_source:
+                    f.write(f"{json.dumps(entry)}\n")
 
 
-def merge_deduplicate_metadata(queries: List[str],
-                               query_return_dir: str) -> Tuple[List, int]:
+def merge_deduplicate_metadata(
+    queries: List[str], query_return_dir: str
+) -> Tuple[List, int]:
     """
     Merge metadata of different queries
     and deduplicate the metadata entries by idInSource.
@@ -140,15 +141,15 @@ def merge_deduplicate_metadata(queries: List[str],
     entries: List[MetadataEntry] = []
 
     for query in queries:
-        query_return_path = f'{query_return_dir}/{slugify(query)}.jsonl'
+        query_return_path = f"{query_return_dir}/{slugify(query)}.jsonl"
         if os.path.exists(query_return_path):
             entries += load_jl(query_return_path)
 
     # Build the mapping from idInSource to index.
     id2index = {}
     for i, entry in enumerate(entries):
-        if entry['idInSource'] not in id2index:
-            id2index[entry['idInSource']] = i
+        if entry["idInSource"] not in id2index:
+            id2index[entry["idInSource"]] = i
 
     selected_indices = list(id2index.values())
     entries_filtered = [entries[i] for i in selected_indices]
