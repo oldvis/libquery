@@ -12,5 +12,5 @@ hero:
       link: /guide/get-started
     - theme: alt
       text: View on Github
-      link: https://github.com/oldvis
+      link: https://github.com/oldvis/libquery
 ---
