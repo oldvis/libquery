@@ -1,3 +1,3 @@
-from ._querier import Querier as LibraryOfCongress
+from ._querier import LibraryOfCongress
 
 __all__ = ["LibraryOfCongress"]

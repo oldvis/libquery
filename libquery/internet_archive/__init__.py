@@ -1,3 +1,3 @@
-from ._querier import Querier as InternetArchive
+from ._querier import InternetArchive
 
 __all__ = ["InternetArchive"]

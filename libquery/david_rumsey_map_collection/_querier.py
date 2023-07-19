@@ -33,7 +33,7 @@ def _build_image_queries(metadata: List[MetadataEntry]) -> List[ImageQuery]:
     ]
 
 
-class Querier(BaseQuerierWithQueryReturn):
+class DavidRumseyMapCollection(BaseQuerierWithQueryReturn):
     """
     The querier for the `David Rumsey Map Collection` data source.
     """

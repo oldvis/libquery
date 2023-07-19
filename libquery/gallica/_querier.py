@@ -38,7 +38,7 @@ def _build_image_queries(metadata: List[MetadataEntry]) -> List[ImageQuery]:
     return img_queries
 
 
-class Querier(BaseQuerierWithQueryReturn):
+class Gallica(BaseQuerierWithQueryReturn):
     """
     The querier for the `Gallica` data source.
     """

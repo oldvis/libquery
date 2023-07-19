@@ -14,7 +14,7 @@ from ._fetch_metadata import (
 from ._fetch_file import fetch_file
 
 
-class Querier(BaseQuerierWithQueryReturn):
+class InternetArchive(BaseQuerierWithQueryReturn):
     """
     The querier for the `Internet Archive` data source.
     """

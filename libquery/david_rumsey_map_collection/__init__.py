@@ -1,3 +1,3 @@
-from ._querier import Querier as DavidRumseyMapCollection
+from ._querier import DavidRumseyMapCollection
 
 __all__ = ["DavidRumseyMapCollection"]

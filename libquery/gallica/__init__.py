@@ -1,3 +1,3 @@
-from ._querier import Querier as Gallica
+from ._querier import Gallica
 
 __all__ = ["Gallica"]

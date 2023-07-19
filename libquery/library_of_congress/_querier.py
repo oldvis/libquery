@@ -25,7 +25,7 @@ def _build_image_queries(metadata: List[MetadataEntry]) -> List[ImageQuery]:
     ]
 
 
-class Querier(BaseQuerier):
+class LibraryOfCongress(BaseQuerier):
     """
     The querier for the `Library of Congress` data source.
     """
