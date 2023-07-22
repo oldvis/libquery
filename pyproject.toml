@@ -19,8 +19,7 @@ python-slugify = "^8.0.1"
 
 
 [tool.poetry.group.dev.dependencies]
-sphinx = "^7.0.1"
-furo = "^2023.5.20"
+black = "^23.7.0"
 
 [build-system]
 requires = ["poetry-core"]
