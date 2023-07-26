@@ -6,7 +6,7 @@ from typing import Dict, List, Literal, TypedDict
 
 from typing_extensions import NotRequired
 
-from ..typing import MetadataEntry as BaseMetadataEntry
+from ..typing import MetadataEntry as _MetadataEntry
 
 Fields = Literal[
     "Author",
@@ -77,7 +77,7 @@ class SourceData(TypedDict):
     refUrlSize4: NotRequired[str]
 
 
-class MetadataEntry(BaseMetadataEntry):
+class MetadataEntry(_MetadataEntry):
     """The data structure of an entry in the metadata."""
 
     sourceData: SourceData

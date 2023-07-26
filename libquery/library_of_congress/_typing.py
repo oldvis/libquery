@@ -9,7 +9,7 @@ from typing import Any, List, TypedDict, Union
 
 from typing_extensions import NotRequired
 
-from ..typing import MetadataEntry as BaseMetadataEntry
+from ..typing import MetadataEntry as _MetadataEntry
 
 
 class RelatedItem(TypedDict):
@@ -186,7 +186,7 @@ class SourceData(TypedDict):
     publication_frequency: NotRequired[List[str]]
 
 
-class MetadataEntry(BaseMetadataEntry):
+class MetadataEntry(_MetadataEntry):
     """The data structure of an entry in the metadata."""
 
     sourceData: SourceData

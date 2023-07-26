@@ -6,7 +6,7 @@ from typing import List, TypedDict, Union
 
 from typing_extensions import NotRequired
 
-from ..typing import MetadataEntry as BaseMetadataEntry
+from ..typing import MetadataEntry as _MetadataEntry
 
 TextWithLang = TypedDict(
     "TextWithLang",
@@ -67,7 +67,7 @@ class SourceData(TypedDict):
     pages: NotRequired[List[Page]]
 
 
-class MetadataEntry(BaseMetadataEntry):
+class MetadataEntry(_MetadataEntry):
     """The data structure of an entry in the metadata."""
 
     sourceData: SourceData
