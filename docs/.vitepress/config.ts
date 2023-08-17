@@ -23,6 +23,7 @@ export default defineConfig({
         text: 'Guide',
         items: [
           { text: 'Get Started', link: '/guide/get-started' },
+          { text: 'API Design', link: '/guide/api-design' },
         ]
       },
       {

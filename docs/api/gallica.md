@@ -10,7 +10,7 @@ Create a querier for Gallica:
 from libquery import Gallica
 
 directory = "./output/gallica"
-querier = DavidRumseyMapCollection(
+querier = Gallica(
     metadata_dir=f"{directory}/metadata",
     img_dir=f"{directory}/imgs",
 )

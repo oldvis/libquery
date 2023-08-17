@@ -10,12 +10,23 @@
 
 # libquery
 
-A python package for querying digital libraries.
+A Python package for querying digital libraries.
 
 ## Installation
 
 ```sh
 pip install libquery
+```
+
+## Usage Example
+
+Query metadata and images in [David Rumsey Map Collection](https://www.davidrumsey.com/):
+
+```python
+from libquery import DavidRumseyMapCollection
+querier = DavidRumseyMapCollection("./metadata/", "./imgs/")
+querier.fetch_metadata(["https://www.davidrumsey.com/luna/servlet/as/search?q=type=chart"])
+querier.fetch_image()
 ```
 
 ## Documentation
