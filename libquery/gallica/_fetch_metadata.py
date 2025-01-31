@@ -126,6 +126,17 @@ def _fetch_pagination(ark: str) -> List[Page]:
     For the identifier of an image collection,
     the pagination information can be used to fetch the images.
     Example ARK identifier: 'ark:/12148/cb32798952c'.
+
+    Args
+    ----
+    ark : string
+        The ARK identifier of a collection.
+
+    Notes
+    -----
+    Using the ARK identifier to obtain image information using the BNF service may fail in the following cases:
+    - The ARK identifier corresponds to a record outside Gallica, e.g., <https://bibliotheques-specialisees.paris.fr/ark:/73873/pf0000855747>.
+    - In rare cases, image information of records in Gallica can not be retrieved using the API, e.g., <https://gallica.bnf.fr/ark:/12148/bc6p06xk9kk>.
     """
 
     # Get image page information (i.e., image list) for a collection
