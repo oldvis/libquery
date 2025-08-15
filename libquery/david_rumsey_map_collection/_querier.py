@@ -2,8 +2,6 @@
 The entrance to querier class.
 """
 
-from typing import List
-
 from ..base import BaseQuerierWithQueryReturn
 from ..typing import ImageQuery
 from ..utils.image import fetch as fetch_image
@@ -21,7 +19,7 @@ def _get_download_url(source_data: SourceData) -> str:
     )
 
 
-def _build_image_queries(metadata: List[MetadataEntry]) -> List[ImageQuery]:
+def _build_image_queries(metadata: list[MetadataEntry]) -> list[ImageQuery]:
     """Build a list of image urls to query."""
 
     return [
@@ -38,11 +36,11 @@ class DavidRumseyMapCollection(BaseQuerierWithQueryReturn):
     The querier for the `David Rumsey Map Collection` data source.
     """
 
-    def fetch_metadata(self, queries: List[str]) -> None:
+    def fetch_metadata(self, queries: list[str]) -> None:
         """
         Args
         ----
-        queries : List[str]
+        queries : list[str]
             The base urls for which query results are to be stored.
         """
 

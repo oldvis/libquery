@@ -1,7 +1,7 @@
 import json
 import os
 from datetime import datetime, timezone
-from typing import List, Literal, Union
+from typing import Literal
 from uuid import uuid5, UUID
 
 import backoff
@@ -11,13 +11,13 @@ from requests.exceptions import ProxyError, SSLError
 from tqdm import tqdm
 
 from ..utils.jsonl import load_jl
-from ..utils.metadata import deduplicate, filter_queries
+from ..utils.metadata import filter_queries
 from ._typing import MetadataEntry
 
 
 def _fetch_num_pages(
     base_url: str, records_per_page: Literal[25, 50, 100, 150]
-) -> Union[int, None]:
+) -> int | None:
     """
     Get the number of found pages, given the search base url.
 
@@ -34,7 +34,7 @@ def _fetch_num_pages(
     return response.json()["pagination"]["total"]
 
 
-def _build_queries(base_urls: List[str], metadata_path: str) -> List[str]:
+def _build_queries(base_urls: list[str], metadata_path: str) -> list[str]:
     """
     Build a list of urls to query.
     """
@@ -48,11 +48,13 @@ def _build_queries(base_urls: List[str], metadata_path: str) -> List[str]:
         if n_pages is None:
             continue
         # The first page is indexed 1 in the database.
-        queries += [f"{base_url}&sp={i+1}&c={records_per_page}" for i in range(n_pages)]
+        queries += [
+            f"{base_url}&sp={i + 1}&c={records_per_page}" for i in range(n_pages)
+        ]
     return filter_queries(queries, metadata_path)
 
 
-def _parse(response: Response) -> List[MetadataEntry]:
+def _parse(response: Response) -> list[MetadataEntry]:
     """
     Parse metadata of entries in Library of Congress.
     """
@@ -61,7 +63,7 @@ def _parse(response: Response) -> List[MetadataEntry]:
     if "results" not in data:
         return []
 
-    entries: List[MetadataEntry] = []
+    entries: list[MetadataEntry] = []
     for result in data["results"]:
         is_image = "image_url" in result and len(result["image_url"]) >= 1
         if (not is_image) or ("item" not in result):
@@ -82,13 +84,13 @@ def _parse(response: Response) -> List[MetadataEntry]:
 
 
 @backoff.on_exception(backoff.constant, (ProxyError, SSLError))
-def fetch_metadata(base_urls: List[str], metadata_path: str) -> None:
+def fetch_metadata(base_urls: list[str], metadata_path: str) -> None:
     """
     Given base urls, generate metadata queries, and store the query results.
 
     Args
     ----
-    base_urls : List[str]
+    base_urls : list[str]
         The base urls for generating queries.
         Each base url corresponds to a search keyword.
     metadata_path : str
@@ -122,4 +124,5 @@ def fetch_metadata(base_urls: List[str], metadata_path: str) -> None:
 
     # For duplicate entries (returned by different search queries),
     # only keep the latest one.
+    # from ..utils.metadata import deduplicate
     # deduplicate(metadata_path)

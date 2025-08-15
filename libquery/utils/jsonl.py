@@ -1,8 +1,8 @@
 import json
-from typing import Any, List
+from typing import Any, Iterable
 
 
-def load_jl(path: str) -> List[Any]:
+def load_jl(path: str) -> list[Any]:
     """Load a list from a JSONL file."""
 
     data = []
@@ -12,7 +12,7 @@ def load_jl(path: str) -> List[Any]:
     return data
 
 
-def save_jl(data: List[Any], path: str) -> None:
+def save_jl(data: Iterable[Any], path: str) -> None:
     """Save a list as a JSONL file."""
 
     with open(path, "w", encoding="utf-8") as f:

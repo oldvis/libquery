@@ -2,8 +2,6 @@
 The entrance to querier class.
 """
 
-from typing import List
-
 from ..base import BaseQuerierWithQueryReturn
 from ..utils.jsonl import save_jl
 from ._extract_images import extract_images
@@ -35,7 +33,7 @@ class InternetArchive(BaseQuerierWithQueryReturn):
         self.download_dir = download_dir
         self.img_dir = img_dir
 
-    def fetch_metadata(self, queries: List[str]) -> None:
+    def fetch_metadata(self, queries: list[str]) -> None:
         fetch_metadata(queries, self.query_return_dir, deduplicate=True)
         entries = merge_deduplicate_metadata(queries, self.query_return_dir)
         save_jl(entries, self.metadata_path)

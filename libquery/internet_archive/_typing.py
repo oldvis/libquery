@@ -2,7 +2,7 @@
 The type declarations specific to the `Internet Archive` data source.
 """
 
-from typing import List, TypedDict, Union
+from typing import TypedDict
 
 from typing_extensions import NotRequired
 
@@ -35,31 +35,31 @@ InternetArchiveMetadata = TypedDict(
         "publicdate": str,
         "uploader": str,
         "addeddate": str,
-        "collection": Union[List[str], str],
-        "description": NotRequired[Union[List[str], str]],
+        "collection": list[str] | str,
+        "description": NotRequired[list[str] | str],
         "call_number": NotRequired[str],
         # The entries' corresponding location
-        "coverage": NotRequired[Union[List[str], str]],
-        "creator": NotRequired[Union[List[str], str]],
+        "coverage": NotRequired[list[str] | str],
+        "creator": NotRequired[list[str] | str],
         # The publication date.
-        "date": NotRequired[Union[List[str], str]],
+        "date": NotRequired[list[str] | str],
         # The number of times the item has been viewed on archive.org
-        "external-identifier": NotRequired[Union[List[str], str]],
+        "external-identifier": NotRequired[list[str] | str],
         "format": NotRequired[str],
-        "language": NotRequired[Union[List[str], str]],
-        "map-type": NotRequired[Union[List[str], str]],
-        "publisher": NotRequired[Union[List[str], str]],
+        "language": NotRequired[list[str] | str],
+        "map-type": NotRequired[list[str] | str],
+        "publisher": NotRequired[list[str] | str],
         # Copyright information
         "rights": NotRequired[str],
         "scanner": NotRequired[str],
         "size": NotRequired[str],
         # The url of the entry in the original data source.
         "source": NotRequired[str],
-        "subject": NotRequired[Union[List[str], str]],
+        "subject": NotRequired[list[str] | str],
         # The warning about the metadata.
         "warning": NotRequired[str],
         "year": NotRequired[str],
-        "isbn": NotRequired[Union[List[str], str]],
+        "isbn": NotRequired[list[str] | str],
         "issn": NotRequired[str],
         "date_range": NotRequired[str],
     },
@@ -71,15 +71,15 @@ class SourceData(TypedDict):
     d1: str
     d2: str
     dir: str
-    files: List[FileMetadata]
+    files: list[FileMetadata]
     files_count: int
     item_last_updated: int
     item_size: int
     metadata: InternetArchiveMetadata
     server: str
     uniq: int
-    workable_servers: List[str]
-    reviews: NotRequired[List[str]]
+    workable_servers: list[str]
+    reviews: NotRequired[list[str]]
     servers_unavailable: NotRequired[bool]
 
 

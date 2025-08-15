@@ -4,7 +4,6 @@ Private utility functions for metadata.
 
 import os
 from datetime import datetime, timezone
-from typing import List
 
 from dateutil import parser
 
@@ -59,14 +58,14 @@ def is_stale(entry: MetadataEntry, days_before_stale: int = 30) -> bool:
 
 
 def filter_queries(
-    queries: List[str], metadata_path: str, keep_stale: bool = False
-) -> List[str]:
+    queries: list[str], metadata_path: str, keep_stale: bool = False
+) -> list[str]:
     """
     Discard the queries that have been executed.
 
     Args
     ----
-    queries : List[str]
+    queries : list[str]
         The queries to be executed.
     metadata_path : str
         The path to the metadata to be read and edited.
@@ -77,11 +76,11 @@ def filter_queries(
 
     Returns
     -------
-    List[str]
+    list[str]
         The queries that have not been executed.
     """
 
-    metadata: List[MetadataEntry] = []
+    metadata: list[MetadataEntry] = []
     if os.path.exists(metadata_path):
         metadata = load_jl(metadata_path)
 

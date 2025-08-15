@@ -2,7 +2,7 @@
 The type declarations specific to the `David Rumsey Map Collection` data source.
 """
 
-from typing import Dict, List, Literal, TypedDict
+from typing import Literal, TypedDict
 
 from typing_extensions import NotRequired
 
@@ -59,8 +59,8 @@ class SourceData(TypedDict):
     displayName: str
     description: str
     mediaType: str
-    fieldValues: List[Dict[Fields, List[str]]]
-    relatedFieldValues: List
+    fieldValues: list[dict[Fields, list[str]]]
+    relatedFieldValues: list
     relayButtonUrl: str
     relayButtonTitle: str
     id: str

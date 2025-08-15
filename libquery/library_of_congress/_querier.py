@@ -2,8 +2,6 @@
 The entrance to querier class.
 """
 
-from typing import List
-
 from ..base import BaseQuerier
 from ..typing import ImageQuery
 from ..utils.image import fetch as fetch_image
@@ -11,7 +9,7 @@ from ._fetch_metadata import fetch_metadata
 from ._typing import MetadataEntry
 
 
-def _build_image_queries(metadata: List[MetadataEntry]) -> List[ImageQuery]:
+def _build_image_queries(metadata: list[MetadataEntry]) -> list[ImageQuery]:
     """
     Build a list of image urls to query.
     """
@@ -43,7 +41,7 @@ class LibraryOfCongress(BaseQuerier):
         self.metadata_path = metadata_path
         self.img_dir = img_dir
 
-    def fetch_metadata(self, queries: List[str]) -> None:
+    def fetch_metadata(self, queries: list[str]) -> None:
         fetch_metadata(queries, self.metadata_path)
 
     def fetch_image(self) -> None:

@@ -1,6 +1,6 @@
 import os
 from os.path import isfile
-from typing import List, TypedDict, Union
+from typing import TypedDict
 
 from internetarchive import download
 from requests.exceptions import ConnectTimeout, HTTPError
@@ -15,7 +15,7 @@ class FileQuery(TypedDict):
     identifier: str
 
 
-def _get_filename(source_data: SourceData) -> Union[str, None]:
+def _get_filename(source_data: SourceData) -> str | None:
     files = source_data["files"]
 
     # 'JPEG' and 'PNG' correspond to collections of single images.
@@ -39,7 +39,7 @@ def _get_filename(source_data: SourceData) -> Union[str, None]:
     return image_files[0]["name"]
 
 
-def _build_queries(metadata: List[MetadataEntry]) -> List[FileQuery]:
+def _build_queries(metadata: list[MetadataEntry]) -> list[FileQuery]:
     """
     Build a list of image urls to query.
     Note that internetarchive's download API already
@@ -63,7 +63,7 @@ def _build_queries(metadata: List[MetadataEntry]) -> List[FileQuery]:
     return img_queries
 
 
-def _filter_queries(img_queries: List[FileQuery], download_dir: str) -> List[FileQuery]:
+def _filter_queries(img_queries: list[FileQuery], download_dir: str) -> list[FileQuery]:
     """
     Filter urls queried before according to the stored files.
     """
@@ -71,7 +71,7 @@ def _filter_queries(img_queries: List[FileQuery], download_dir: str) -> List[Fil
     return [
         d
         for d in img_queries
-        if not isfile(f'{download_dir}/{d["identifier"]}/{d["filename"]}')
+        if not isfile(f"{download_dir}/{d['identifier']}/{d['filename']}")
     ]
 
 

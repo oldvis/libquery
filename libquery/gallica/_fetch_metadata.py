@@ -3,7 +3,6 @@ import math
 import os
 import re
 from datetime import datetime, timezone
-from typing import Dict, List, Union
 from uuid import uuid5, UUID
 
 import backoff
@@ -18,11 +17,11 @@ from ..utils.metadata import filter_queries
 from ._typing import Page, MetadataEntry, Record, SourceData
 
 
-searched_url: List[str] = []
+searched_url: list[str] = []
 
 
 @backoff.on_exception(backoff.constant, ExpatError)
-def _try_fetch_xml(url: str) -> Union[Dict, None]:
+def _try_fetch_xml(url: str) -> dict | None:
     response = requests.get(url)
 
     # If the server raises error,
@@ -57,7 +56,7 @@ def _get_query_param(base_url: str) -> str:
     return f"query={query_param}"
 
 
-def _get_ark_identifier(identifier: str) -> Union[str, None]:
+def _get_ark_identifier(identifier: str) -> str | None:
     """
     Extract the ark identifier from the url identifier.
     If the ark identifier cannot be parsed, return None.
@@ -75,7 +74,7 @@ def _get_ark_identifier(identifier: str) -> Union[str, None]:
     return f"ark:/{m[0]}"
 
 
-def _build_queries(template_url: str, query_return_path: str) -> List[str]:
+def _build_queries(template_url: str, query_return_path: str) -> list[str]:
     """
     Build a list of urls to query.
     """
@@ -120,7 +119,7 @@ def _fetch_oai_record(ark: str) -> Record:
     return payload["results"]["notice"]["record"]["metadata"]["oai_dc:dc"]
 
 
-def _fetch_pagination(ark: str) -> List[Page]:
+def _fetch_pagination(ark: str) -> list[Page]:
     """
     Get pagination information given the ARK identifier.
     For the identifier of an image collection,
@@ -159,7 +158,7 @@ def _fetch_pagination(ark: str) -> List[Page]:
 
 
 @backoff.on_exception(backoff.constant, KeyError)
-def _fetch_identifiers(query: str) -> List[str]:
+def _fetch_identifiers(query: str) -> list[str]:
     """
     Get the identifiers of search results, given a search query.
 
@@ -167,7 +166,7 @@ def _fetch_identifiers(query: str) -> List[str]:
     https://gallica.bnf.fr/ark:/12148/btv1b530093905
     """
 
-    payload: Dict = _try_fetch_xml(query)
+    payload: dict = _try_fetch_xml(query)
     records = payload["srw:searchRetrieveResponse"]["srw:records"]["srw:record"]
 
     if not isinstance(records, list):
@@ -222,7 +221,7 @@ def _parse(query: str, identifier: str) -> MetadataEntry:
 
 
 @backoff.on_exception(backoff.constant, (ProxyError, SSLError))
-def fetch_metadata(base_urls: List[str], query_return_dir: str) -> None:
+def fetch_metadata(base_urls: list[str], query_return_dir: str) -> None:
     """
     Given base url and title keywords, generate metadata queries, and store the query results.
 
@@ -271,7 +270,7 @@ def fetch_metadata(base_urls: List[str], query_return_dir: str) -> None:
                 searched_url.append(query)
 
 
-def merge_metadata(base_urls: List[str], query_return_dir: str) -> List[MetadataEntry]:
+def merge_metadata(base_urls: list[str], query_return_dir: str) -> list[MetadataEntry]:
     """
     Combine metadata files into one.
     """

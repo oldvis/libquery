@@ -6,7 +6,6 @@ import json
 import os
 from datetime import datetime, timezone
 from uuid import uuid5, UUID
-from typing import List
 
 import backoff
 import requests
@@ -38,7 +37,7 @@ def _get_query_param(base_url: str) -> str:
     return base_url.split("?")[1]
 
 
-def _build_queries(base_url: str, query_return_path: str) -> List[str]:
+def _build_queries(base_url: str, query_return_path: str) -> list[str]:
     """
     Build a list of urls to query.
     The urls already queried according to
@@ -87,7 +86,7 @@ def _parse(response: Response) -> MetadataEntry:
 
 
 @backoff.on_exception(backoff.constant, ProxyError)
-def fetch_metadata(base_urls: List[str], query_return_dir: str) -> None:
+def fetch_metadata(base_urls: list[str], query_return_dir: str) -> None:
     """
     Given base urls, generate metadata queries, and store the query results.
 
@@ -97,7 +96,7 @@ def fetch_metadata(base_urls: List[str], query_return_dir: str) -> None:
 
     Args
     ----
-    base_urls : List[str]
+    base_urls : list[str]
         The base urls for generating queries.
         Each base url corresponds to a search keyword.
     query_return_dir : str
@@ -126,13 +125,13 @@ def fetch_metadata(base_urls: List[str], query_return_dir: str) -> None:
         deduplicate(query_return_path)
 
 
-def merge_metadata(base_urls: List[str], query_return_dir: str) -> List[MetadataEntry]:
+def merge_metadata(base_urls: list[str], query_return_dir: str) -> list[MetadataEntry]:
     """
     Merge metadata of different queries.
     Return the merge result.
     """
 
-    entries: List[MetadataEntry] = []
+    entries: list[MetadataEntry] = []
     for base_url in base_urls:
         path = os.path.join(
             query_return_dir,

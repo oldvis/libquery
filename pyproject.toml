@@ -20,6 +20,7 @@ pillow = "10.4.0"
 
 [tool.poetry.group.dev.dependencies]
 black = {extras = ["jupyter"], version = "^25.1.0"}
+ruff = "^0.12.8"
 
 [build-system]
 requires = ["poetry-core"]

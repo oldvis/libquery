@@ -2,8 +2,6 @@
 The entrance to querier class.
 """
 
-from typing import List
-
 from ..base import BaseQuerierWithQueryReturn
 from ..typing import ImageQuery
 from ..utils.image import (
@@ -17,7 +15,7 @@ from ._typing import MetadataEntry
 from ._utils import get_image_url, get_image_uuid
 
 
-def _build_image_queries(metadata: List[MetadataEntry]) -> List[ImageQuery]:
+def _build_image_queries(metadata: list[MetadataEntry]) -> list[ImageQuery]:
     """Build a list of image urls to query."""
 
     img_queries = []
@@ -43,11 +41,11 @@ class Gallica(BaseQuerierWithQueryReturn):
     The querier for the `Gallica` data source.
     """
 
-    def fetch_metadata(self, queries: List[str]) -> None:
+    def fetch_metadata(self, queries: list[str]) -> None:
         """
         Args
         ----
-        queries : List[str]
+        queries : list[str]
             The base urls for which query results are to be stored.
         """
 

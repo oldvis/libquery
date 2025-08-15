@@ -6,7 +6,6 @@ import os
 import json
 from datetime import datetime, timezone
 from uuid import uuid5, UUID
-from typing import Dict, List, Tuple
 
 import backoff
 import internetarchive
@@ -63,7 +62,7 @@ fields = [
 ]
 
 
-def _parse(search_result: Dict, query: str) -> MetadataEntry:
+def _parse(search_result: dict, query: str) -> MetadataEntry:
     """
     Parse metadata of entries in Internet Archive.
     """
@@ -84,14 +83,14 @@ def _parse(search_result: Dict, query: str) -> MetadataEntry:
 
 @backoff.on_exception(backoff.constant, ProxyError)
 def fetch_metadata(
-    queries: List[str], query_return_dir: str, deduplicate: bool = True
+    queries: list[str], query_return_dir: str, deduplicate: bool = True
 ) -> None:
     """
     Given the search queries, and store the query results.
 
     Args
     ----
-    queries : List[str]
+    queries : list[str]
         The search queries.
     query_return_dir : str
         The path to the folder for storing the metadata files.
@@ -126,8 +125,8 @@ def fetch_metadata(
 
 
 def merge_deduplicate_metadata(
-    queries: List[str], query_return_dir: str
-) -> Tuple[List, int]:
+    queries: list[str], query_return_dir: str
+) -> tuple[list, int]:
     """
     Merge metadata of different queries
     and deduplicate the metadata entries by idInSource.
@@ -138,7 +137,7 @@ def merge_deduplicate_metadata(
     or it should be replaced with _utils.metadata.deduplicate.
     """
 
-    entries: List[MetadataEntry] = []
+    entries: list[MetadataEntry] = []
 
     for query in queries:
         query_return_path = f"{query_return_dir}/{slugify(query)}.jsonl"

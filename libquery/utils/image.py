@@ -8,7 +8,7 @@ from enum import Enum
 from os import listdir, remove
 from os.path import isfile, join
 from time import sleep
-from typing import Callable, List
+from typing import Callable
 
 import backoff
 import requests
@@ -40,7 +40,7 @@ def _try_remove_image(img_dir: str, uuid: str) -> bool:
     return True
 
 
-def filter_queries(img_queries: List[ImageQuery], img_dir: str) -> List[ImageQuery]:
+def filter_queries(img_queries: list[ImageQuery], img_dir: str) -> list[ImageQuery]:
     """
     Filter urls queried before according to the stored images.
     """
@@ -67,6 +67,9 @@ last_uuid = None
 def _backoff_handler(details: Details) -> None:
     print("Error occurred. Retry fetching the images:", details)
 
+    if last_uuid is None:
+        return
+
     img_dir = (
         details["args"][1]
         if "img_dir" not in details["kwargs"]
@@ -85,7 +88,7 @@ def _backoff_handler(details: Details) -> None:
 def fetch(
     metadata_path: str,
     img_dir: str,
-    _build_queries: Callable[[List[MetadataEntry]], List[ImageQuery]],
+    _build_queries: Callable[[list[MetadataEntry]], list[ImageQuery]],
     incomplete_file_handler: IncompleteFileHandler = IncompleteFileHandler.RAISE_ERROR,
 ) -> None:
     """
@@ -114,10 +117,14 @@ def fetch(
 
         # Note: some database may continuously raise error for a certain resource.
         # It is necessary to ignore such resources instead of keep fetching repeatedly.
+        response = None
         try:
             response = s.get(query["url"])
         except SSLError as e:
             print(f"Error {e}")
+
+        if response is None:
+            continue
 
         # 403 Forbidden
         if response.status_code == 403:
@@ -154,7 +161,7 @@ def fetch(
             response.headers["content-length"]
         ):
             print(
-                f'Status code {response.status_code} - File not fully returned for url = {query["url"]}: {len(response.content)} != {response.headers["content-length"]}'
+                f"Status code {response.status_code} - File not fully returned for url = {query['url']}: {len(response.content)} != {response.headers['content-length']}"
             )
             if incomplete_file_handler == IncompleteFileHandler.RAISE_ERROR:
                 raise ProxyError()

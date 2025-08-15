@@ -2,7 +2,7 @@
 Type declarations for collected data.
 """
 
-from typing import Any, Dict, TypedDict
+from typing import Any, TypedDict
 
 from typing_extensions import NotRequired
 
@@ -27,7 +27,7 @@ class MetadataEntry(TypedDict):
     accessDate : str
         The time (UTC+0) the entry is saved (in ISO 8601 format).
         Generate with datetime.now(timezone.utc).isoformat().
-    sourceData : Dict[str, Any]
+    sourceData : dict[str, Any]
         The source data directly extracted from the url.
         If the url is an API query, store the returned JSON.
         If the url is a webpage url, store the useful information extracted from the webpage.
@@ -38,7 +38,7 @@ class MetadataEntry(TypedDict):
     source: str
     idInSource: str
     accessDate: str
-    sourceData: Dict[str, Any]
+    sourceData: dict[str, Any]
 
 
 class ImageQuery(TypedDict):
