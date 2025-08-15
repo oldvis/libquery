@@ -1,4 +1,9 @@
+"""
+Extract images from Internet Archive.
+"""
+
 import io
+import logging
 import os
 import shutil
 
@@ -7,6 +12,8 @@ from tqdm import tqdm
 from zipfile import ZipFile, BadZipFile
 
 from ._utils import get_image_uuid
+
+logger = logging.getLogger(__name__)
 
 
 def _revise_filename(filename: str) -> str:
@@ -47,7 +54,7 @@ def _extract_images_from_zip(file: str, img_dir: str) -> None:
                 img = Image.open(io.BytesIO(image_bytes))
                 img.save(store_path)
     except BadZipFile:
-        print("Zip file corrupted:", file)
+        logger.warning("Zip file corrupted: %s", file)
 
 
 def extract_images(download_dir: str, img_dir: str) -> None:

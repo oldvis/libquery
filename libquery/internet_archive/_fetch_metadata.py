@@ -2,6 +2,7 @@
 Utility functions for getting metadata from David Rumsey Map Collection.
 """
 
+import logging
 import os
 import json
 from datetime import datetime, timezone
@@ -15,6 +16,8 @@ from tqdm import tqdm
 
 from ..utils.jsonl import load_jl
 from ._typing import MetadataEntry
+
+logger = logging.getLogger(__name__)
 
 fields = [
     "avg_rating",
@@ -104,7 +107,7 @@ def fetch_metadata(
         os.makedirs(query_return_dir)
 
     for query in queries:
-        print(f"Fetch Metadata from {query}")
+        logger.info("Fetch Metadata from %s", query)
 
         query_return_path = f"{query_return_dir}/{slugify(query)}.jsonl"
         search_results = internetarchive.search_items(query, fields=fields)

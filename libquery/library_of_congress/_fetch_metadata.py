@@ -1,4 +1,9 @@
+"""
+Fetch metadata from Library of Congress.
+"""
+
 import json
+import logging
 import os
 from datetime import datetime, timezone
 from typing import Literal
@@ -15,6 +20,9 @@ from ..utils.metadata import filter_queries
 from ._typing import MetadataEntry
 
 
+logger = logging.getLogger(__name__)
+
+
 def _fetch_num_pages(
     base_url: str, records_per_page: Literal[25, 50, 100, 150]
 ) -> int | None:
@@ -29,7 +37,7 @@ def _fetch_num_pages(
     pagination_url = f"{base_url}&at=pagination&c={records_per_page}"
     response = requests.get(pagination_url)
     if response.status_code == 403:
-        print("403 Forbidden at", pagination_url)
+        logger.warning("403 Forbidden at %s", pagination_url)
         return None
     return response.json()["pagination"]["total"]
 

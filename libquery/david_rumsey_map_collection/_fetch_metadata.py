@@ -3,6 +3,7 @@ Utility functions for getting metadata from David Rumsey Map Collection.
 """
 
 import json
+import logging
 import os
 from datetime import datetime, timezone
 from uuid import uuid5, UUID
@@ -16,6 +17,9 @@ from tqdm import tqdm
 from ..utils.jsonl import load_jl
 from ..utils.metadata import deduplicate, filter_queries
 from ._typing import MetadataEntry
+
+
+logger = logging.getLogger(__name__)
 
 
 def _fetch_num_records(base_url: str) -> int:
@@ -107,7 +111,7 @@ def fetch_metadata(base_urls: list[str], query_return_dir: str) -> None:
         os.makedirs(query_return_dir)
 
     for base_url in base_urls:
-        print(f"Fetch Metadata from {base_url}")
+        logger.info("Fetch Metadata from %s", base_url)
 
         query_return_path = os.path.join(
             query_return_dir,

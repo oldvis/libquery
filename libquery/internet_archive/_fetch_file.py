@@ -1,3 +1,8 @@
+"""
+Fetch files from Internet Archive.
+"""
+
+import logging
 import os
 from os.path import isfile
 from typing import TypedDict
@@ -8,6 +13,9 @@ from tqdm import tqdm
 
 from ..utils.jsonl import load_jl
 from ._typing import MetadataEntry, SourceData
+
+
+logger = logging.getLogger(__name__)
 
 
 class FileQuery(TypedDict):
@@ -98,4 +106,4 @@ def fetch_file(metadata_path: str, download_dir: str) -> None:
             download(query["identifier"], files=query["filename"], destdir=download_dir)
         except (ConnectTimeout, HTTPError) as e:
             # Internet Archive raises 403 Forbidden when item is not available.
-            print(e)
+            logger.error("Error: %s", e)

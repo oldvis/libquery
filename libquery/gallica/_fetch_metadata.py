@@ -1,4 +1,5 @@
 import json
+import logging
 import math
 import os
 import re
@@ -16,6 +17,8 @@ from ..utils.jsonl import load_jl
 from ..utils.metadata import filter_queries
 from ._typing import Page, MetadataEntry, Record, SourceData
 
+
+logger = logging.getLogger(__name__)
 
 searched_url: list[str] = []
 
@@ -239,7 +242,7 @@ def fetch_metadata(base_urls: list[str], query_return_dir: str) -> None:
     visited_id_in_source = []
 
     for template_url in base_urls:
-        print(f"Fetch Metadata from {template_url}")
+        logger.info("Fetch Metadata from %s", template_url)
 
         query_return_path = os.path.join(
             query_return_dir,

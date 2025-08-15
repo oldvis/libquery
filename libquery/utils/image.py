@@ -2,6 +2,7 @@
 Fetch images from the urls stored in metadata.
 """
 
+import logging
 import mimetypes
 import os
 from enum import Enum
@@ -18,6 +19,9 @@ from tqdm import tqdm
 
 from ..typing import ImageQuery, MetadataEntry
 from .jsonl import load_jl
+
+
+logger = logging.getLogger(__name__)
 
 
 def _filename2uuid(filename: str) -> str:
@@ -65,7 +69,7 @@ last_uuid = None
 
 
 def _backoff_handler(details: Details) -> None:
-    print("Error occurred. Retry fetching the images:", details)
+    logger.warning("Error occurred. Retry fetching the images: %s", details)
 
     if last_uuid is None:
         return
@@ -77,7 +81,7 @@ def _backoff_handler(details: Details) -> None:
     )
     is_removed = _try_remove_image(img_dir, last_uuid)
     if is_removed:
-        print("remove", last_uuid)
+        logger.info("Removed incomplete image: %s", last_uuid)
 
 
 @backoff.on_exception(
@@ -121,7 +125,7 @@ def fetch(
         try:
             response = s.get(query["url"])
         except SSLError as e:
-            print(f"Error {e}")
+            logger.error("SSL Error: %s", e)
 
         if response is None:
             continue
@@ -160,8 +164,12 @@ def fetch(
         if "content-length" in response.headers and len(response.content) != int(
             response.headers["content-length"]
         ):
-            print(
-                f"Status code {response.status_code} - File not fully returned for url = {query['url']}: {len(response.content)} != {response.headers['content-length']}"
+            logger.warning(
+                "Status code %d - File not fully returned for url = %s: %d != %s",
+                response.status_code,
+                query['url'],
+                len(response.content),
+                response.headers["content-length"]
             )
             if incomplete_file_handler == IncompleteFileHandler.RAISE_ERROR:
                 raise ProxyError()
