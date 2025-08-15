@@ -40,7 +40,7 @@ def _try_remove_image(img_dir: str, uuid: str) -> bool:
     if not os.path.isfile(file_path):
         return False
 
-    remove(uuid)
+    remove(file_path)
     return True
 
 
@@ -167,9 +167,9 @@ def fetch(
             logger.warning(
                 "Status code %d - File not fully returned for url = %s: %d != %s",
                 response.status_code,
-                query['url'],
+                query["url"],
                 len(response.content),
-                response.headers["content-length"]
+                response.headers["content-length"],
             )
             if incomplete_file_handler == IncompleteFileHandler.RAISE_ERROR:
                 raise ProxyError()
