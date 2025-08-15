@@ -129,8 +129,8 @@ def _fetch_pagination(ark: str) -> list[Page]:
     the pagination information can be used to fetch the images.
     Example ARK identifier: 'ark:/12148/cb32798952c'.
 
-    Args
-    ----
+    Parameters
+    ----------
     ark : string
         The ARK identifier of a collection.
 
@@ -228,8 +228,8 @@ def fetch_metadata(base_urls: list[str], query_return_dir: str) -> None:
     """
     Given base url and title keywords, generate metadata queries, and store the query results.
 
-    Args
-    ----
+    Parameters
+    ----------
     base_urls:
         The base URLs for generating queries.
     query_return_dir:

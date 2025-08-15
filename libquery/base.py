@@ -25,8 +25,8 @@ class BaseQuerierWithQueryReturn(BaseQuerier):
 
     def __init__(self, metadata_dir: str, img_dir: str):
         """
-        Args
-        ----
+        Parameters
+        ----------
         metadata_dir : str
             The directory storing the metadata from each query.
         img_dir : str

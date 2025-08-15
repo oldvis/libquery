@@ -41,8 +41,8 @@ Use [Black](https://github.com/psf/black) to detect code style issues and fix th
 The steps to publish the package:
 
 1. Bump the version in `pyproject.toml`.
-2. create a new tag for the version with `git tag v*.*.*`.
-3. push the tag to Github with `git push origin v*.*.*`, which will trigger the Github workflow at `.github/workflow/publish-to-pypi.yml` to automatically publish the package to PyPI.
+2. Create a new tag for the version with `git tag v*.*.*`.
+3. Push the tag to Github with `git push origin v*.*.*`, which will trigger the Github workflow at `.github/workflow/publish-to-pypi.yml` to automatically publish the package to PyPI.
 
 ## Thanks
 

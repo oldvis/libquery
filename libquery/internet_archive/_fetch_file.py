@@ -87,8 +87,8 @@ def fetch_file(metadata_path: str, download_dir: str) -> None:
     """
     Given base urls, generate file queries, and store the query results.
 
-    Args
-    ----
+    Parameters
+    ----------
     metadata_path : str
         The path to the metadata file where file urls are stored.
     download_dir : str

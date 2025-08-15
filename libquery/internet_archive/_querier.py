@@ -19,8 +19,8 @@ class InternetArchive(BaseQuerierWithQueryReturn):
 
     def __init__(self, metadata_dir: str, download_dir: str, img_dir: str):
         """
-        Args
-        ----
+        Parameters
+        ----------
         metadata_path : str
             The file storing the metadata from each query.
         download_dir : str

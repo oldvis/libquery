@@ -43,8 +43,8 @@ class Gallica(BaseQuerierWithQueryReturn):
 
     def fetch_metadata(self, queries: list[str]) -> None:
         """
-        Args
-        ----
+        Parameters
+        ----------
         queries : list[str]
             The base urls for which query results are to be stored.
         """

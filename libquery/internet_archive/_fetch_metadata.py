@@ -91,8 +91,8 @@ def fetch_metadata(
     """
     Given the search queries, and store the query results.
 
-    Args
-    ----
+    Parameters
+    ----------
     queries : list[str]
         The search queries.
     query_return_dir : str

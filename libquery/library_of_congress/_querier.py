@@ -30,8 +30,8 @@ class LibraryOfCongress(BaseQuerier):
 
     def __init__(self, metadata_path: str, img_dir: str):
         """
-        Args
-        ----
+        Parameters
+        ----------
         metadata_path : str
             The file storing the metadata from each query.
         img_dir : str

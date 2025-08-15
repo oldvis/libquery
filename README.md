@@ -13,7 +13,8 @@
 
 # libquery
 
-A Python package for querying digital libraries.
+A Python package for querying digital libraries and archives.
+Supports multiple data sources including [David Rumsey Map Collection](https://www.davidrumsey.com/), [Gallica](https://gallica.bnf.fr/), [Internet Archive](https://archive.org/), and [Library of Congress](https://www.loc.gov/).
 
 ## Installation
 

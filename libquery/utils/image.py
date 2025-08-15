@@ -98,8 +98,8 @@ def fetch(
     """
     Given base urls, generate image queries, and store the query results.
 
-    Args
-    ----
+    Parameters
+    ----------
     metadata_path : str
         The path to the metadata file where image urls are stored.
     img_dir : str

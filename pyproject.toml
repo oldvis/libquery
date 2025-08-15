@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "libquery"
 version = "0.1.1"
-description = ""
+description = "A Python package for querying digital libraries and archives"
 authors = ["Yu Zhang <yuzhang94@outlook.com>"]
 readme = "README.md"
 

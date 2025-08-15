@@ -96,8 +96,8 @@ def fetch_metadata(base_urls: list[str], metadata_path: str) -> None:
     """
     Given base urls, generate metadata queries, and store the query results.
 
-    Args
-    ----
+    Parameters
+    ----------
     base_urls : list[str]
         The base urls for generating queries.
         Each base url corresponds to a search keyword.

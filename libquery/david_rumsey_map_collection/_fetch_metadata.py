@@ -98,8 +98,8 @@ def fetch_metadata(base_urls: list[str], query_return_dir: str) -> None:
     already stored in existing metadata files.
     The duplication is checked by idInSource.
 
-    Args
-    ----
+    Parameters
+    ----------
     base_urls : list[str]
         The base urls for generating queries.
         Each base url corresponds to a search keyword.

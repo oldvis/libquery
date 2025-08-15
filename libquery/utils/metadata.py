@@ -17,8 +17,8 @@ def deduplicate(metadata_path: str) -> None:
     Load the metadata and deduplicate by `idInSource`.
     For the entries with the same `idInSource`, only keep the latest one.
 
-    Args
-    ----
+    Parameters
+    ----------
     metadata_path : str
         The path to the metadata to be read and edited.
     """
@@ -43,8 +43,8 @@ def is_stale(entry: MetadataEntry, days_before_stale: int = 30) -> bool:
     """
     Return whether the entry is stale.
 
-    Args
-    ----
+    Parameters
+    ----------
     entry : MetadataEntry
         The metadata entry.
     days_before_stale : int
@@ -63,8 +63,8 @@ def filter_queries(
     """
     Discard the queries that have been executed.
 
-    Args
-    ----
+    Parameters
+    ----------
     queries : list[str]
         The queries to be executed.
     metadata_path : str
